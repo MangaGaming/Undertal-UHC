@@ -1,0 +1,9 @@
+name: Undertale UHC
+version: 1.0
+main: com.mguhc.undertale.UndertaleUHC
+api-version: 1.8
+depend: [UhcAPI]
+commands:
+  # Undertale UHC
+  ut:
+    description: Commande principale pour Undertale UHC
