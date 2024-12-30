@@ -157,6 +157,6 @@ public class CodyListener implements Listener {
     }
     
     private boolean isCody(UhcPlayer uhc_player) {
-        return uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Cody");
+        return uhc_player != null && uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Cody");
     }
 }
