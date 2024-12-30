@@ -11,6 +11,7 @@ import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import com.mguhc.undertale.UndertaleUHC;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -60,23 +61,26 @@ public class FriskListener implements Listener {
 			if(isFirsk(playerManager.getPlayer(player))) {
 				Player aimedPlayer = Bukkit.getPlayer(args[2]);
 				if(aimedPlayer != null) {
-					if(cooldownManager.isInCooldown(player, saveAbility)) {
-						cooldownManager.startCooldown(player, saveAbility);
-						effectManager.setWeakness(player, effectManager.getEffect(player, PotionEffectType.WEAKNESS) + 25);
+					if(cooldownManager.isInCooldown(aimedPlayer, saveAbility)) {
+						cooldownManager.startCooldown(aimedPlayer, saveAbility);
+						effectManager.setWeakness(aimedPlayer, effectManager.getEffect(aimedPlayer, PotionEffectType.WEAKNESS) + 25);
+						player.sendMessage(ChatColor.GREEN + "Vous avez baissé les dégats de " + aimedPlayer.getName() + " de 25%");
+						aimedPlayer.sendMessage(ChatColor.RED + "Vos dégats ont été baissé de 25%");
 						new BukkitRunnable() {
 							@Override
 							public void run() {
-								effectManager.setWeakness(player, effectManager.getEffect(player, PotionEffectType.WEAKNESS) - 25);
+								effectManager.setWeakness(aimedPlayer, effectManager.getEffect(aimedPlayer, PotionEffectType.WEAKNESS) - 25);
+								player.sendMessage(ChatColor.RED + "Les dégats de " + aimedPlayer.getName() + " sont de nouveau normal");
+								aimedPlayer.sendMessage(ChatColor.GREEN + "Vos dégats sont de nouveau normal");
 							}
 						}.runTaskLater(UndertaleUHC.getInstance(), 5*20);
 					}
 					else {
-						player.sendMessage("Vous êtes en cooldown pour " + cooldownManager.getRemainingCooldown(player, saveAbility) / 1000 + " secondes");
+						aimedPlayer.sendMessage("Vous êtes en cooldown pour " + cooldownManager.getRemainingCooldown(aimedPlayer, saveAbility) / 1000 + " secondes");
 					}
 				}
 			}
 		}
-
 	}
 
 	private boolean isFirsk(UhcPlayer player) {
