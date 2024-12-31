@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.mguhc.undertale.roles.humain.HumainListener;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
@@ -102,6 +104,9 @@ public class UndertaleUHC extends JavaPlugin {
         soloCamp.addRole(roleMap.get("Player"));
         soloCamp.addRole(roleMap.get("Betty"));
         UhcAPI.getInstance().getRoleManager().addCamp(soloCamp);
+
+        Camp friskCamp = new Camp("Duo de Frisk", "Location of Frisk Camp");
+        UhcAPI.getInstance().getRoleManager().addCamp(friskCamp);
     }
 
     private void initializeRole() {
@@ -231,10 +236,15 @@ public class UndertaleUHC extends JavaPlugin {
 
     private void initializeEffects() {
         Map<PotionEffectType, Integer> alizaEffects = new HashMap<>();
-        alizaEffects.put(PotionEffectType.SPEED, 20);
+        alizaEffects.put(PotionEffectType.SPEED, 120);
         alizaEffects.put(PotionEffectType.WEAKNESS, 20);
         RoleManager roleManager = UhcAPI.getInstance().getRoleManager();
         roleManager.setEffectsToGive("Aliza", alizaEffects);
+
+        Map<PotionEffectType, Integer> friskEffects = new HashMap<>();
+        friskEffects.put(PotionEffectType.WEAKNESS, 20);
+        roleManager.setEffectsToGive("Frisk", friskEffects);
+
 
     }
 
