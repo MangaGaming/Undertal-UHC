@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.mguhc.effect.EffectManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,6 +39,7 @@ import com.mguhc.undertale.UndertaleUHC;
 
 public class ErikListener implements Listener {
 
+    private final EffectManager effectManager;
     private RoleManager roleManager;
     private PlayerManager playerManager;
 	private AbilityManager abilityManager;
@@ -57,6 +59,7 @@ public class ErikListener implements Listener {
         this.playerManager = UhcAPI.getInstance().getPlayerManager();
         this.abilityManager = UhcAPI.getInstance().getAbilityManager();
         this.cooldownManager = UhcAPI.getInstance().getCooldownManager();
+        this.effectManager = UhcAPI.getInstance().getEffectManager();
 
         // Enregistrer la capacité "Charge Audacieuse" pour le rôle "Erik"
         UhcRole erikRole = roleManager.getUhcRole("Erik"); // Assurez-vous que le rôle "Erik" existe
@@ -71,9 +74,9 @@ public class ErikListener implements Listener {
                 if (uhc_player != null) {
                     long time = uhc_player.getPlayer().getWorld().getTime(); // Obtenir le temps actuel dans le monde
                     if (time >= 0 && time < 12000) { // Vérifier si c'est le jour
-                        uhc_player.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0, true, false));
+                        effectManager.setStrength(uhc_player.getPlayer(), 20);
                     } else {
-                        uhc_player.getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
+                        effectManager.removeEffect(uhc_player.getPlayer(), PotionEffectType.INCREASE_DAMAGE);
                     }
                 }
             }
