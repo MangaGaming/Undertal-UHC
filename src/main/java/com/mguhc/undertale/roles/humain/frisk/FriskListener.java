@@ -11,7 +11,6 @@ import com.mguhc.roles.Camp;
 import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import com.mguhc.undertale.UndertaleUHC;
-import com.mguhc.undertale.roles.humain.HumainListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +22,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,7 +33,6 @@ import java.util.*;
 
 public class FriskListener implements Listener {
 
-	private final HumainListener humainListener;
 	private EffectManager effectManager;
 	private SaveAbility saveAbility;
 	private ActAbility actAbility;
@@ -55,14 +56,15 @@ public class FriskListener implements Listener {
 	private int hitHeaten = 0;
 	private int blockBroken = 0;
 	private boolean hasUsedMercy = false;
+	private Player duo;
+	private boolean canUseSoulPower = true;
 
-	public FriskListener(HumainListener humainListener) {
+	public FriskListener() {
 		UhcAPI api = UhcAPI.getInstance();
 		this.playerManager = api.getPlayerManager();
 		this.roleManager = api.getRoleManager();
 		this.cooldownManager = api.getCooldownManager();
 		this.abilityManager = api.getAbilityManager();
-		this.humainListener = humainListener;
 		this.effectManager = UhcAPI.getInstance().getEffectManager();
 
 		UhcRole friskRole = roleManager.getUhcRole("Frisk");
@@ -127,13 +129,14 @@ public class FriskListener implements Listener {
 			}
 		}
 		if(args.length == 2 && args[0].equals("/ut") && args[1].equals("mercy")) {
-			if(playerCanUseMercy.getOrDefault(player.getUniqueId(), false)) {
+			if(playerCanUseMercy.getOrDefault(player.getUniqueId(), true)) {
 				Random random = new Random();
 				for(Map.Entry<Player, UhcPlayer> entry : playerManager.getPlayers().entrySet()) {
 					if(roleManager.getCamp(entry.getValue()).getName().equals("Monstre")) {
 						Player chosenPlayer = entry.getKey();
 						Camp camp = roleManager.getCamps().get(3);
 						roleManager.setCamp(playerManager.getPlayer(chosenPlayer), camp);
+						duo = chosenPlayer;
 						chosenPlayer.sendMessage("Vous avez été assigner au camp " + camp.getName() + ", vous êtes avec " + player.getName());
 						roleManager.setCamp(playerManager.getPlayer(player), camp);
 						effectManager.setResistance(player, effectManager.getEffect(player, PotionEffectType.DAMAGE_RESISTANCE) + 20);
@@ -242,8 +245,50 @@ public class FriskListener implements Listener {
             }
 		}
 	}
+	
+	@EventHandler
+	private void OnInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack item = event.getItem();
+		if(isFrisk(playerManager.getPlayer(player)) &&
+			item.equals(getSoulItem()) &&
+			hasUsedMercy &&
+			duo != null &&
+			canUseSoulPower) {
+			canUseSoulPower = false;
+			player.sendMessage("Vous avez donner un coeur en plus à votre duo");
+			duo.sendMessage("Vous avez reçu un coeur en plus de la part de votre duo");
+			duo.setMaxHealth(duo.getMaxHealth() + 0.5);
+		}
+	}
+
+	@EventHandler
+	private void OnDeath(PlayerDeathEvent event) {
+		Player victim = event.getEntity().getPlayer();
+		Player killer = event.getEntity().getKiller();
+		if(victim.getInventory().contains(getSoulItem())) {
+			List<ItemStack> drops = event.getDrops();
+			drops.remove(getSoulItem());
+		}
+
+		if(isFrisk(playerManager.getPlayer(victim))) {
+			duo.getInventory().addItem(getSoulItem());
+			duo.setMaxHealth(duo.getMaxHealth() + 0.5);
+			duo.sendMessage("Vous avez reçu l'âme de votre partenaire");
+		}
+	}
 
 	private boolean isFrisk(UhcPlayer player) {
 		return player.getRole() != null && player.getRole().getName().equals("Frisk");
+	}
+
+	private ItemStack getSoulItem() {
+		ItemStack soul = new ItemStack(Material.NETHER_STAR);
+		ItemMeta soul_meta = soul.getItemMeta();
+		if (soul_meta != null) {
+			soul_meta.setDisplayName(ChatColor.RED + "Ame de Determination");
+			soul.setItemMeta(soul_meta);
+		}
+		return soul;
 	}
 }
