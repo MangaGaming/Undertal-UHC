@@ -1,15 +1,12 @@
 package com.mguhc.undertale;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.mguhc.undertale.roles.humain.HumainListener;
-import org.bukkit.Bukkit;
+import com.mguhc.undertale.roles.humain.chara.CharaListener;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
@@ -68,7 +65,8 @@ public class UndertaleUHC extends JavaPlugin {
         pluginManager.registerEvents(new CodyListener(), this);
         pluginManager.registerEvents(new ErikListener(), this);
         pluginManager.registerEvents(new ElieListener(), this);
-        pluginManager.registerEvents(new FriskListener(humainListener), this);
+        pluginManager.registerEvents(new FriskListener(), this);
+        pluginManager.registerEvents(new CharaListener(), this);
     }
 
     private void initializeCamp() {
@@ -232,6 +230,33 @@ public class UndertaleUHC extends JavaPlugin {
         elieItems.add(protectionBook);
 
         roleManager.setItemToGive("Elie", elieItems);
+
+        ItemStack friskItem = new ItemStack(Material.NETHER_STAR);
+        ItemMeta frisk_meta = friskItem.getItemMeta();
+        if(frisk_meta != null) {
+            frisk_meta.setDisplayName(ChatColor.RED + "Ame de Determination");
+            friskItem.setItemMeta(frisk_meta);
+        }
+        List<ItemStack> friskItems = Arrays.asList(friskItem);
+        roleManager.setItemToGive("Frisk", friskItems);
+
+        ItemStack charaItem = new ItemStack(Material.NETHER_STAR);
+        ItemMeta chara_meta = charaItem.getItemMeta();
+        if(chara_meta != null) {
+            chara_meta.setDisplayName(ChatColor.RED + "Ame de Determination");
+            charaItem.setItemMeta(frisk_meta);
+        }
+
+        ItemStack sharp4 = new ItemStack(Material.ENCHANTED_BOOK);
+        ItemMeta sharp_meta = sharp4.getItemMeta();
+        if(sharp_meta != null) {
+            sharp_meta.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
+            sharp_meta.setDisplayName(ChatColor.BLUE + "Livre Sharpness 4");
+            sharp4.setItemMeta(sharp_meta);
+        }
+
+        List<ItemStack> charaItems = Arrays.asList(charaItem, sharp4);
+        roleManager.setItemToGive("Chara", charaItems);
     }
 
     private void initializeEffects() {
