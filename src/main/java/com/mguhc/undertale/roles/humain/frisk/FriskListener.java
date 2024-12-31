@@ -182,7 +182,8 @@ public class FriskListener implements Listener {
 		Player player = event.getPlayer();
 		if (event.getItem().getType() == Material.GOLDEN_APPLE) {
 			UUID playerId = player.getUniqueId();
-			if(playerObjectives.get(playerId).contains("Manger 2 pommes d'or")) {
+			List<String> objectives = playerObjectives.get(playerId);
+			if(objectives != null && objectives.contains("Manger 2 pommes d'or")) {
 				gapleEaten ++;
 				if(gapleEaten == 2) {
 					gapleEaten = 0;
@@ -197,7 +198,8 @@ public class FriskListener implements Listener {
 		if (event.getDamager() instanceof Player) {
 			Player damager = (Player) event.getDamager();
 			UUID playerId = damager.getUniqueId();
-			if(playerObjectives.get(playerId).contains("Donner 10 coups d'épée")) {
+			List<String> objectives = playerObjectives.get(playerId);
+			if(objectives != null && objectives.contains("Donner 10 coups d'épée")) {
 				hitHeaten ++;
 				if(hitHeaten == 10) {
 					hitHeaten = 0;
@@ -211,7 +213,8 @@ public class FriskListener implements Listener {
 	public void onPlayerKill(PlayerDeathEvent event) {
 		Player killer = event.getEntity().getKiller();
 		if (killer != null) {
-			if(playerObjectives.get(killer.getUniqueId()).contains("Faire un kill")) {
+			List<String> objectives = playerObjectives.get(killer.getUniqueId());
+			if(objectives != null  && objectives.contains("Faire un kill")) {
 				checkObjectivesCompletion(killer, "Faire un kill");
 			}
 		}
@@ -220,7 +223,8 @@ public class FriskListener implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
-		if(playerObjectives.get(player.getUniqueId()).contains("Casser 64 blocs de pierre")) {
+		List<String> objectives = playerObjectives.get(player.getUniqueId());
+		if(objectives != null && objectives.contains("Casser 64 blocs de pierre")) {
 			blockBroken ++;
 			if(blockBroken == 64) {
 				checkObjectivesCompletion(player, "Casser 64 blocs de pierre");
@@ -232,7 +236,8 @@ public class FriskListener implements Listener {
 	public void onPlayerTakeFallDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
 			Player player = (Player) event.getEntity();
-			if(playerObjectives.get(player.getUniqueId()).contains("Prendre un dégât de chute")) {
+			List<String> objectives = playerObjectives.get(player.getUniqueId());
+			if(objectives != null && objectives.contains("Prendre un dégât de chute")) {
                 checkObjectivesCompletion(player, "Prendre un dégât de chute");
             }
 		}
