@@ -3,8 +3,8 @@ package com.mguhc.undertale.roles.humain.chara;
 import com.mguhc.ability.Ability;
 import org.bukkit.entity.Player;
 
-public class RageAbility implements Ability {
-    private double cooldownDuration = 5*1000;
+public class PecherAbility implements Ability {
+    private double cooldownDuration = 3*1000;
 
     @Override
     public void activate(Player player) {
