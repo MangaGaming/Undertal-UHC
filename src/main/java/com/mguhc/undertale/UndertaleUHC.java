@@ -4,19 +4,13 @@ import java.util.*;
 
 import com.mguhc.undertale.roles.humain.HumainListener;
 import com.mguhc.undertale.roles.humain.chara.CharaListener;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import com.mguhc.undertale.roles.monstre.SansListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mguhc.UhcAPI;
 import com.mguhc.roles.Camp;
-import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import com.mguhc.undertale.roles.humain.aliza.AlizaListener;
 import com.mguhc.undertale.roles.humain.clover.CloverListener;
@@ -41,8 +35,6 @@ public class UndertaleUHC extends JavaPlugin {
                 roleMap = new HashMap<>(); // Initialize the role map
                 initializeRole();
                 initializeCamp();
-                initializeItems(); // Initialize items for roles
-                initializeEffects(); // Initialize effects for roles
             }
         }.runTaskLater(this, 1);
 
@@ -67,6 +59,7 @@ public class UndertaleUHC extends JavaPlugin {
         pluginManager.registerEvents(new ElieListener(), this);
         pluginManager.registerEvents(new FriskListener(), this);
         pluginManager.registerEvents(new CharaListener(), this);
+        pluginManager.registerEvents(new SansListener(), this);
     }
 
     private void initializeCamp() {
@@ -141,136 +134,6 @@ public class UndertaleUHC extends JavaPlugin {
         UhcRole role = new UhcRole(name, description);
         roles.add(role);
         roleMap.put(name, role); // Store the role in the map
-    }
-
-    private void initializeItems() {
-        // Items pour Aliza
-        ItemStack alizaItem = new ItemStack(Material.NETHER_STAR);
-        ItemMeta alizaMeta = alizaItem.getItemMeta(); // Obtenir l'ItemMeta
-        if (alizaMeta != null) {
-            alizaMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ame de Perseverance");
-            alizaItem.setItemMeta(alizaMeta); // Appliquer l'ItemMeta à l'ItemStack
-        }
-        List<ItemStack> alizaItems = new ArrayList<>();
-        alizaItems.add(alizaItem);
-        RoleManager roleManager = UhcAPI.getInstance().getRoleManager();
-        roleManager.setItemToGive("Aliza", alizaItems);
-
-        // Items pour Clover
-        ItemStack cloverItem = new ItemStack(Material.NETHER_STAR);
-        ItemMeta cloverMeta = cloverItem.getItemMeta(); // Obtenir l'ItemMeta
-        if (cloverMeta != null) {
-            cloverMeta.setDisplayName(ChatColor.YELLOW + "Ame de Justice");
-            cloverItem.setItemMeta(cloverMeta); // Appliquer l'ItemMeta à l'ItemStack
-        }
-        List<ItemStack> cloverItems = new ArrayList<>();
-        cloverItems.add(cloverItem);
-        roleManager.setItemToGive("Clover", cloverItems);
-
-        // Items pour Cody
-        ItemStack codyItem = new ItemStack(Material.NETHER_STAR);
-        ItemMeta codyMeta = codyItem.getItemMeta(); // Obtenir l'ItemMeta
-        if (codyMeta != null) {
-            codyMeta.setDisplayName(ChatColor.GREEN + "Ame de Gentillesse");
-            codyItem.setItemMeta(codyMeta); // Appliquer l'ItemMeta à l'ItemStack
-        }
-        List<ItemStack> codyItems = new ArrayList<>();
-        codyItems.add(codyItem);
-
-        // Ajouter les potions jetables
-        ItemStack weaknessPotion = new ItemStack(Material.POTION, 1, (short) 16386); // Potion de Weakness
-        ItemStack poisonPotion = new ItemStack(Material.POTION, 1, (short) 16388); // Potion de Poison
-        ItemStack healingPotion1 = new ItemStack(Material.POTION, 1, (short) 16373); // Potion de Soin (Instant Health)
-        ItemStack healingPotion2 = new ItemStack(Material.POTION, 1, (short) 16373); // Potion de Soin (Instant Health)
-
-        codyItems.add(weaknessPotion);
-        codyItems.add(poisonPotion);
-        codyItems.add(healingPotion1);
-        codyItems.add(healingPotion2);
-
-        roleManager.setItemToGive("Cody", codyItems);
-
-        // Items pour Erik
-        ItemStack erikItem1 = new ItemStack(Material.NETHER_STAR);
-        ItemMeta erikMeta1 = erikItem1.getItemMeta(); // Obtenir l'ItemMeta
-        if (erikMeta1 != null) {
-            erikMeta1.setDisplayName(ChatColor.GOLD + "Charge Audacieuse");
-            erikItem1.setItemMeta(erikMeta1); // Appliquer l'ItemMeta à l'ItemStack
-        }
-
-        ItemStack erikItem2 = new ItemStack(Material.NETHER_STAR);
-        ItemMeta erikMeta2 = erikItem2.getItemMeta(); // Obtenir l'ItemMeta
-        if (erikMeta2 != null) {
-            erikMeta2.setDisplayName(ChatColor.GOLD + "Ame de Bravoure");
-            erikItem2.setItemMeta(erikMeta2); // Appliquer l'ItemMeta à l'ItemStack
-        }
-
-        List<ItemStack> erikItems = new ArrayList<>();
-        erikItems.add(erikItem1);
-        erikItems.add(erikItem2);
-        roleManager.setItemToGive("Erik", erikItems);
-
-        // Items pour Elie
-        ItemStack elieItem1 = new ItemStack(Material.NETHER_STAR);
-        ItemMeta elieMeta1 = elieItem1.getItemMeta(); // Obtenir l'ItemMeta
-        if (elieMeta1 != null) {
-            elieMeta1.setDisplayName(ChatColor.BLUE + "Ame de Patience");
-            elieItem1.setItemMeta(elieMeta1); // Appliquer l'ItemMeta à l'ItemStack
-        }
-        List<ItemStack> elieItems = new ArrayList<>();
-        elieItems.add(elieItem1);
-
-        // Ajouter le livre de Protection III
-        ItemStack protectionBook = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta bookMeta = protectionBook.getItemMeta(); // Obtenir l'ItemMeta
-        if (bookMeta != null) {
-            bookMeta.setDisplayName(ChatColor.AQUA + "Livre de Protection III");
-            protectionBook.setItemMeta(bookMeta); // Appliquer l'ItemMeta à l'ItemStack
-        }
-        elieItems.add(protectionBook);
-
-        roleManager.setItemToGive("Elie", elieItems);
-
-        ItemStack friskItem = new ItemStack(Material.NETHER_STAR);
-        ItemMeta frisk_meta = friskItem.getItemMeta();
-        if(frisk_meta != null) {
-            frisk_meta.setDisplayName(ChatColor.RED + "Ame de Determination");
-            friskItem.setItemMeta(frisk_meta);
-        }
-        List<ItemStack> friskItems = Arrays.asList(friskItem);
-        roleManager.setItemToGive("Frisk", friskItems);
-
-        ItemStack charaItem = new ItemStack(Material.NETHER_STAR);
-        ItemMeta chara_meta = charaItem.getItemMeta();
-        if(chara_meta != null) {
-            chara_meta.setDisplayName(ChatColor.RED + "Ame de Determination");
-            charaItem.setItemMeta(frisk_meta);
-        }
-
-        ItemStack sharp4 = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta sharp_meta = sharp4.getItemMeta();
-        if(sharp_meta != null) {
-            sharp_meta.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
-            sharp_meta.setDisplayName(ChatColor.BLUE + "Livre Sharpness 4");
-            sharp4.setItemMeta(sharp_meta);
-        }
-
-        List<ItemStack> charaItems = Arrays.asList(charaItem, sharp4);
-        roleManager.setItemToGive("Chara", charaItems);
-    }
-
-    private void initializeEffects() {
-        Map<PotionEffectType, Integer> alizaEffects = new HashMap<>();
-        alizaEffects.put(PotionEffectType.SPEED, 120);
-        alizaEffects.put(PotionEffectType.WEAKNESS, 20);
-        RoleManager roleManager = UhcAPI.getInstance().getRoleManager();
-        roleManager.setEffectsToGive("Aliza", alizaEffects);
-
-        Map<PotionEffectType, Integer> friskEffects = new HashMap<>();
-        friskEffects.put(PotionEffectType.WEAKNESS, 20);
-        roleManager.setEffectsToGive("Frisk", friskEffects);
-
-
     }
 
     public static UndertaleUHC getInstance() {

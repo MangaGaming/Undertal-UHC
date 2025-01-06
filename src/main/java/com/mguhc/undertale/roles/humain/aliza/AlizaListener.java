@@ -7,6 +7,8 @@ import java.util.List;
 import com.mguhc.ability.Ability;
 import com.mguhc.ability.AbilityManager;
 import com.mguhc.ability.CooldownManager;
+import com.mguhc.effect.EffectManager;
+import com.mguhc.events.RoleGiveEvent;
 import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import org.bukkit.ChatColor;
@@ -30,6 +32,7 @@ import com.mguhc.player.UhcPlayer;
 import com.mguhc.undertale.UndertaleUHC;
 
 public class AlizaListener implements Listener {
+    private EffectManager effectManager;
     private CooldownManager cooldownManager;
     private InstinctAbility instinctAbility;
     private AbilityManager abilityManager;
@@ -44,12 +47,32 @@ public class AlizaListener implements Listener {
         this.roleManager = UhcAPI.getInstance().getRoleManager();
         this.cooldownManager = UhcAPI.getInstance().getCooldownManager();
         this.abilityManager = UhcAPI.getInstance().getAbilityManager();
+        this.effectManager = UhcAPI.getInstance().getEffectManager();
 
         UhcRole alizaRole = roleManager.getUhcRole("Aliza");
         if(alizaRole != null) {
             this.instinctAbility = new InstinctAbility();
             List<Ability> abilities = Arrays.asList(instinctAbility);
             abilityManager.registerAbility(alizaRole, abilities);
+        }
+    }
+
+    @EventHandler
+    private void OnRoleGive(RoleGiveEvent event) {
+        UhcPlayer uhcPlayer  = roleManager.getPlayerWithRole("Aliza");
+        if(uhcPlayer != null) {
+            Player player = uhcPlayer.getPlayer();
+            // Items pour Aliza
+            ItemStack alizaItem = new ItemStack(Material.NETHER_STAR);
+            ItemMeta alizaMeta = alizaItem.getItemMeta(); // Obtenir l'ItemMeta
+            if (alizaMeta != null) {
+                alizaMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Ame de Perseverance");
+                alizaItem.setItemMeta(alizaMeta); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            player.getInventory().addItem(alizaItem);
+            
+            effectManager.setSpeed(player, 120);
+            effectManager.setWeakness(player, 20);
         }
     }
 

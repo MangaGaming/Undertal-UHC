@@ -12,7 +12,7 @@ import com.mguhc.ability.CooldownManager;
 public class ChargeAudacieuseAbility implements Ability {
     private final double dashDistance = 10.0; // Distance du dash (10 blocs)
     private final double damage = 2.0; // Dégâts infligés
-    private double cooldownDuration = 7 * 60 * 20; // Cooldown de 7 secondes en ticks
+    private double cooldownDuration = 7 * 60 * 1000; // Cooldown de 7 minutes en millisecondes
 
     @Override
     public void activate(Player player) {

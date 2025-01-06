@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.mguhc.effect.EffectManager;
+import com.mguhc.events.RoleGiveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -63,46 +64,71 @@ public class ErikListener implements Listener {
 
         // Enregistrer la capacité "Charge Audacieuse" pour le rôle "Erik"
         UhcRole erikRole = roleManager.getUhcRole("Erik"); // Assurez-vous que le rôle "Erik" existe
-        List<Ability> abilities = Arrays.asList(new ChargeAudacieuseAbility());
+        this.chargeAudacieuse = new ChargeAudacieuseAbility();
+        List<Ability> abilities = Arrays.asList(chargeAudacieuse);
         abilityManager.registerAbility(erikRole, abilities); // Enregistrer l'ability
+    }
 
-        // Démarrer un Runnable pour vérifier le temps régulièrement
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                UhcPlayer uhc_player = roleManager.getPlayerWithRole("Erik");
-                if (uhc_player != null) {
-                    long time = uhc_player.getPlayer().getWorld().getTime(); // Obtenir le temps actuel dans le monde
-                    if (time >= 0 && time < 12000) { // Vérifier si c'est le jour
-                        effectManager.setStrength(uhc_player.getPlayer(), 20);
-                    } else {
-                        effectManager.removeEffect(uhc_player.getPlayer(), PotionEffectType.INCREASE_DAMAGE);
+    @EventHandler
+    private void OnRoleGive(RoleGiveEvent event) {
+        UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Erik");
+        if(uhcPlayer != null) {
+            Player player = uhcPlayer.getPlayer();
+
+            ItemStack erikItem1 = new ItemStack(Material.NETHER_STAR);
+            ItemMeta erikMeta1 = erikItem1.getItemMeta(); // Obtenir l'ItemMeta
+            if (erikMeta1 != null) {
+                erikMeta1.setDisplayName(ChatColor.GOLD + "Charge Audacieuse");
+                erikItem1.setItemMeta(erikMeta1); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            player.getInventory().addItem(erikItem1);
+
+            ItemStack erikItem2 = new ItemStack(Material.NETHER_STAR);
+            ItemMeta erikMeta2 = erikItem2.getItemMeta(); // Obtenir l'ItemMeta
+            if (erikMeta2 != null) {
+                erikMeta2.setDisplayName(ChatColor.GOLD + "Ame de Bravoure");
+                erikItem2.setItemMeta(erikMeta2); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            player.getInventory().addItem(erikItem2);
+
+            // Démarrer un Runnable pour vérifier le temps régulièrement
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    UhcPlayer uhc_player = roleManager.getPlayerWithRole("Erik");
+                    if (uhc_player != null) {
+                        long time = uhc_player.getPlayer().getWorld().getTime(); // Obtenir le temps actuel dans le monde
+                        if (time >= 0 && time < 12000) { // Vérifier si c'est le jour
+                            effectManager.setStrength(uhc_player.getPlayer(), 20);
+                        } else {
+                            effectManager.removeEffect(uhc_player.getPlayer(), PotionEffectType.INCREASE_DAMAGE);
+                        }
                     }
                 }
-            }
-        }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20); // Vérifie toutes les secondes
+            }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20); // Vérifie toutes les secondes
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Map.Entry<Player, UhcPlayer> entry : playerManager.getPlayers().entrySet()) {
-                    Player player = entry.getKey();
-                    if (player.getInventory().contains(getSoulItem())) {
-                        if (player.hasPotionEffect(PotionEffectType.WEAKNESS)) {
-                            player.removePotionEffect(PotionEffectType.WEAKNESS);
-                        }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Map.Entry<Player, UhcPlayer> entry : playerManager.getPlayers().entrySet()) {
+                        Player player = entry.getKey();
+                        if (player.getInventory().contains(getSoulItem())) {
+                            if (player.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+                                player.removePotionEffect(PotionEffectType.WEAKNESS);
+                            }
 
-                        if (player.hasPotionEffect(PotionEffectType.SLOW)) {
-                            player.removePotionEffect(PotionEffectType.SLOW);
-                        }
+                            if (player.hasPotionEffect(PotionEffectType.SLOW)) {
+                                player.removePotionEffect(PotionEffectType.SLOW);
+                            }
 
-                        if (player.hasPotionEffect(PotionEffectType.POISON)) {
-                            player.removePotionEffect(PotionEffectType.POISON);
+                            if (player.hasPotionEffect(PotionEffectType.POISON)) {
+                                player.removePotionEffect(PotionEffectType.POISON);
+                            }
                         }
                     }
                 }
-            }
-        }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20);
+            }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20);
+        }
     }
 
     @EventHandler

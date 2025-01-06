@@ -5,6 +5,7 @@ import com.mguhc.ability.Ability;
 import com.mguhc.ability.AbilityManager;
 import com.mguhc.ability.CooldownManager;
 import com.mguhc.effect.EffectManager;
+import com.mguhc.events.RoleGiveEvent;
 import com.mguhc.player.PlayerManager;
 import com.mguhc.player.UhcPlayer;
 import com.mguhc.roles.Camp;
@@ -73,6 +74,24 @@ public class FriskListener implements Listener {
 			this.actAbility = new ActAbility();
 			List<Ability> abilities = Arrays.asList(saveAbility, actAbility);
 			abilityManager.registerAbility(friskRole, abilities);
+		}
+	}
+
+	@EventHandler
+	private void OnRoleGive(RoleGiveEvent event) {
+		UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Frisk");
+        if(uhcPlayer != null) {
+			Player player = uhcPlayer.getPlayer();
+
+			ItemStack friskItem = new ItemStack(Material.NETHER_STAR);
+			ItemMeta frisk_meta = friskItem.getItemMeta();
+			if(frisk_meta != null) {
+				frisk_meta.setDisplayName(ChatColor.RED + "Ame de Determination (Save)");
+				friskItem.setItemMeta(frisk_meta);
+			}
+			player.getInventory().addItem(friskItem);
+
+			effectManager.setWeakness(player, 20);
 		}
 	}
 
@@ -271,7 +290,8 @@ public class FriskListener implements Listener {
 			drops.remove(getSoulItem());
 		}
 
-		if(isFrisk(playerManager.getPlayer(victim))) {
+		if(isFrisk(playerManager.getPlayer(victim)) &&
+			duo != null) {
 			duo.getInventory().addItem(getSoulItem());
 			duo.setMaxHealth(duo.getMaxHealth() + 0.5);
 			duo.sendMessage("Vous avez reçu l'âme de votre partenaire");
@@ -286,7 +306,7 @@ public class FriskListener implements Listener {
 		ItemStack soul = new ItemStack(Material.NETHER_STAR);
 		ItemMeta soul_meta = soul.getItemMeta();
 		if (soul_meta != null) {
-			soul_meta.setDisplayName(ChatColor.RED + "Ame de Determination");
+			soul_meta.setDisplayName(ChatColor.RED + "Ame de Determination (Save)");
 			soul.setItemMeta(soul_meta);
 		}
 		return soul;

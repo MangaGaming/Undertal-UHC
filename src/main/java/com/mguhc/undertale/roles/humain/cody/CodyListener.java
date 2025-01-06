@@ -3,6 +3,7 @@ package com.mguhc.undertale.roles.humain.cody;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mguhc.events.RoleGiveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -59,6 +60,30 @@ public class CodyListener implements Listener {
             );
 
             abilityManager.registerAbility(codyRole, abilities);
+        }
+    }
+
+    @EventHandler
+    private void OnRoleGive(RoleGiveEvent event) {
+        UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Cody");
+        if(uhcPlayer != null) {
+            Player player = uhcPlayer.getPlayer();
+            // Items pour Cody
+            ItemStack codyItem = new ItemStack(Material.NETHER_STAR);
+            ItemMeta codyMeta = codyItem.getItemMeta(); // Obtenir l'ItemMeta
+            if (codyMeta != null) {
+                codyMeta.setDisplayName(ChatColor.GREEN + "Ame de Gentillesse");
+                codyItem.setItemMeta(codyMeta); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            player.getInventory().addItem(codyItem);
+
+            // Ajouter les potions jetables
+            ItemStack weaknessPotion = new ItemStack(Material.POTION, 1, (short) 16386); // Potion de Weakness
+            ItemStack poisonPotion = new ItemStack(Material.POTION, 1, (short) 16388); // Potion de Poison
+            ItemStack healingPotion = new ItemStack(Material.POTION, 2, (short) 16373); // Potion de Soin (Instant Health
+            player.getInventory().addItem(weaknessPotion);
+            player.getInventory().addItem(poisonPotion);
+            player.getInventory().addItem(healingPotion);
         }
     }
     

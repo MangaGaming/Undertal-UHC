@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.mguhc.events.RoleGiveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -57,6 +58,22 @@ public class CloverListener implements Listener {
             List<Ability> abilities = Arrays.asList(justiceAbility, balanceAbility, soulPowerAbility);
 
             abilityManager.registerAbility(cloverRole, abilities);
+        }
+    }
+
+    @EventHandler
+    private void OnRoleGive(RoleGiveEvent event) {
+        UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Clover");
+        if(uhcPlayer != null) {
+            Player player = uhcPlayer.getPlayer();
+            // Items pour Clover
+            ItemStack cloverItem = new ItemStack(Material.NETHER_STAR);
+            ItemMeta cloverMeta = cloverItem.getItemMeta(); // Obtenir l'ItemMeta
+            if (cloverMeta != null) {
+                cloverMeta.setDisplayName(ChatColor.YELLOW + "Ame de Justice");
+                cloverItem.setItemMeta(cloverMeta); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            player.getInventory().addItem(cloverItem);
         }
     }
 

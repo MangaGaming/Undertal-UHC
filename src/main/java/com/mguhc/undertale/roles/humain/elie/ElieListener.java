@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.mguhc.events.RoleGiveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -64,64 +65,88 @@ public class ElieListener implements Listener {
 		
 		List<Ability> abilities = Arrays.asList(revelationability, visionability);
 		abilityManager.registerAbility(roleManager.getUhcRole("Elie"), abilities);
-		
-		startImmobilityCheck();
-		
-		new BukkitRunnable() {
-		    @Override
-		    public void run() {
-		        if (UhcAPI.getInstance().getUhcGame().getTimePassed() == 40 * 60) {
-		            UhcPlayer uhc_elie = roleManager.getPlayerWithRole("Elie");
-		            if (uhc_elie == null) {
-		                this.cancel();
-		            } else {
-		                Player elie = uhc_elie.getPlayer();
-
-		                // Récupérer les joueurs dans le camp humain
-		                List<UhcPlayer> humanPlayers = roleManager.getPlayersInCamp("Humain");
-		                StringBuilder message = new StringBuilder();
-		                message.append("Joueurs dans le camp humain :\n");
-
-		                // Ajouter chaque joueur à la liste
-		                for (UhcPlayer uhcPlayer : humanPlayers) {
-		                    message.append("- ").append(uhcPlayer.getPlayer().getName()).append("\n");
-		                }
-
-		                // Envoyer le message à Elie
-		                elie.sendMessage(message.toString());
-
-		                this.cancel();
-		            }
-		        }
-		    }
-		}.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20);
 	}
-	
-	private void startImmobilityCheck() {
+
+    @EventHandler
+    private void OnRoleGive(RoleGiveEvent event) {
+        UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Elie");
+        if(uhcPlayer != null) {
+            Player player = uhcPlayer.getPlayer();
+            // Items pour Elie
+            ItemStack elieItem1 = new ItemStack(Material.NETHER_STAR);
+            ItemMeta elieMeta1 = elieItem1.getItemMeta(); // Obtenir l'ItemMeta
+            if (elieMeta1 != null) {
+                elieMeta1.setDisplayName(ChatColor.BLUE + "Ame de Patience");
+                elieItem1.setItemMeta(elieMeta1); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            // Ajouter le livre de Protection III
+            ItemStack protectionBook = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta bookMeta = protectionBook.getItemMeta(); // Obtenir l'ItemMeta
+            if (bookMeta != null) {
+                bookMeta.setDisplayName(ChatColor.AQUA + "Livre de Protection III");
+                protectionBook.setItemMeta(bookMeta); // Appliquer l'ItemMeta à l'ItemStack
+            }
+            player.getInventory().addItem(elieItem1);
+            player.getInventory().addItem(protectionBook);
+
+            startImmobilityCheck();
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (UhcAPI.getInstance().getUhcGame().getTimePassed() == 40 * 60) {
+                        UhcPlayer uhc_elie = roleManager.getPlayerWithRole("Elie");
+                        if (uhc_elie == null) {
+                            this.cancel();
+                        } else {
+                            Player elie = uhc_elie.getPlayer();
+
+                            // Récupérer les joueurs dans le camp humain
+                            List<UhcPlayer> humanPlayers = roleManager.getPlayersInCamp("Humain");
+                            StringBuilder message = new StringBuilder();
+                            message.append("Joueurs dans le camp humain :\n");
+
+                            // Ajouter chaque joueur à la liste
+                            for (UhcPlayer uhcPlayer : humanPlayers) {
+                                message.append("- ").append(uhcPlayer.getPlayer().getName()).append("\n");
+                            }
+
+                            // Envoyer le message à Elie
+                            elie.sendMessage(message.toString());
+
+                            this.cancel();
+                        }
+                    }
+                }
+            }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20);
+        }
+    }
+
+    private void startImmobilityCheck() {
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (Map.Entry<Player, UhcPlayer> entry : playerManager.getPlayers().entrySet()) {
-                	Player player = entry.getKey();
+                    Player player = entry.getKey();
                     Location currentLocation = player.getLocation();
                     if (lastLocation.containsKey(player)) {
                         Location previousLocation = lastLocation.get(player);
 
                         // Vérifier si le joueur est immobile
                         if (currentLocation.getX() == previousLocation.getX() &&
-                            currentLocation.getY() == previousLocation.getY() &&
-                            currentLocation.getZ() == previousLocation.getZ()) {
-                            
+                                currentLocation.getY() == previousLocation.getY() &&
+                                currentLocation.getZ() == previousLocation.getZ()) {
+
                             // Incrémente le temps immobile
                             long currentTime = System.currentTimeMillis();
                             immobileTime.put(player, immobileTime.getOrDefault(player, currentTime));
 
                             // Vérifier si le joueur est immobile depuis 10 secondes
                             if (currentTime - immobileTime.get(player) >= 10000) { // 10 secondes
-                            	double health = player.getHealth();
-                            	if(health < 20) {
-                            		player.setHealth(player.getHealth() + 0.5);
-                            	}
+                                double health = player.getHealth();
+                                if(health < 20) {
+                                    player.setHealth(player.getHealth() + 0.5);
+                                }
                                 List<Entity> nearbyEntities = player.getNearbyEntities(5, 5, 5);
                                 boolean hasNearbyPlayers = false;
 
@@ -132,14 +157,14 @@ public class ElieListener implements Listener {
                                     }
                                 }
                                 if(hasNearbyPlayers &&
-                                	isElie(playerManager.getPlayer(player)))  {
-                                	if(cooldownManager.getRemainingCooldown(player, revelationability) == 0) {
-                                    	cooldownManager.startCooldown(player, revelationability);
-                                    	openPlayerListInventory(player);
-                                	}
-                                	else {
-                                		player.sendMessage("Vous êtes en cooldown pour " + cooldownManager.getRemainingCooldown(player, revelationability) / 1000 + " secondes");
-                                	}
+                                        isElie(playerManager.getPlayer(player)))  {
+                                    if(cooldownManager.getRemainingCooldown(player, revelationability) == 0) {
+                                        cooldownManager.startCooldown(player, revelationability);
+                                        openPlayerListInventory(player);
+                                    }
+                                    else {
+                                        player.sendMessage("Vous êtes en cooldown pour " + cooldownManager.getRemainingCooldown(player, revelationability) / 1000 + " secondes");
+                                    }
                                 }
                             }
                         } else {
@@ -155,7 +180,8 @@ public class ElieListener implements Listener {
         }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20); // Vérifie toutes les secondes
     }
 
-	@EventHandler
+
+    @EventHandler
 	private void OnMove(PlayerMoveEvent event) {
 	    if (UhcAPI.getInstance().getUhcGame().getCurrentPhase().getName().equals("Playing")) {
 	        Player player = event.getPlayer();
