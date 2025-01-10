@@ -71,7 +71,7 @@ public class AlizaListener implements Listener {
             }
             player.getInventory().addItem(alizaItem);
             
-            effectManager.setSpeed(player, 120);
+            effectManager.setSpeed(player, 20);
             effectManager.setWeakness(player, 20);
         }
     }

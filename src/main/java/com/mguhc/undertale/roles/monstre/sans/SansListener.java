@@ -1,4 +1,4 @@
-package com.mguhc.undertale.roles.monstre;
+package com.mguhc.undertale.roles.monstre.sans;
 
 import com.mguhc.UhcAPI;
 import com.mguhc.ability.AbilityManager;
@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -39,6 +40,7 @@ public class SansListener implements Listener {
     private int specCount = 0;
     private boolean canUseTp = true;
     private List<Player> playerSpectated = new ArrayList<>();
+    private int judgeCount;
 
     public SansListener() {
         UhcAPI api = UhcAPI.getInstance();
@@ -98,44 +100,82 @@ public class SansListener implements Listener {
              }
          }
          if (args.length == 2 && args[0].equalsIgnoreCase("/ut") && args[1].equals("judge")) {
-             // Trouver un joueur à proximité
-             List<Location> trueLabLocations = Arrays.asList(
-                     new Location(Bukkit.getWorld("world"), 100, 100, 100),
-                     new Location(Bukkit.getWorld("world"), 50, 100, 50),
-                     new Location(Bukkit.getWorld("world"), 100, 100, 50));
+             if(judgeCount <= 2) {
+                 final boolean[] isJudgeOn = {true};
+                 judgeCount++;
+                 player.sendMessage("Judge Utilisé");
+                 // Trouver un joueur à proximité
+                 List<Location> trueLabLocations = Arrays.asList(
+                         new Location(Bukkit.getWorld("world"), 100, 100, 100),
+                         new Location(Bukkit.getWorld("world"), 50, 100, 50),
+                         new Location(Bukkit.getWorld("world"), 100, 100, 50));
 
-             List<Player> nearbyPlayers = new ArrayList<>();
-             Random random = new Random();
+                 List<Player> nearbyPlayers = new ArrayList<>();
+                 Random random = new Random();
 
-             Map<Player, Map<PotionEffectType, Integer>> playerEffects = new HashMap<>();
-             Map<Player, Location> playerLocations = new HashMap<>();
+                 Map<Player, Map<PotionEffectType, Integer>> playerEffects = new HashMap<>();
+                 Map<Player, Location> playerLocations = new HashMap<>();
 
-             for (Entity entity : player.getNearbyEntities(15, 15, 15)) {
-                 if (entity instanceof Player) {
-                     Player nearbyPlayer = (Player) entity;
-                     nearbyPlayers.add(nearbyPlayer);
-                 }
-             }
-             for(Player nearbyPlayer : nearbyPlayers) {
-                 playerEffects.put(nearbyPlayer, effectManager.getEffectsMap(player));
-                 playerLocations.put(nearbyPlayer, nearbyPlayer.getLocation());
-                 nearbyPlayer.teleport(trueLabLocations.get(random.nextInt(trueLabLocations.size())));
-                 effectManager.removeEffects(nearbyPlayer);
-                 effectManager.setWeakness(nearbyPlayer, 20);
-             }
-             new BukkitRunnable() {
-                 @Override
-                 public void run() {
-                     for(Map.Entry<Player, Map<PotionEffectType, Integer>> entry : playerEffects.entrySet()) {
-                         Player player = entry.getKey();
-                         effectManager.setEffects(player, entry.getValue());
-                     }
-                     for(Map.Entry<Player, Location> entry : playerLocations.entrySet()) {
-                         Player player = entry.getKey();
-                         player.teleport(entry.getValue());
+                 for (Entity entity : player.getNearbyEntities(15, 15, 15)) {
+                     if (entity instanceof Player) {
+                         Player nearbyPlayer = (Player) entity;
+                         nearbyPlayers.add(nearbyPlayer);
                      }
                  }
-             }.runTaskLater(UndertaleUHC.getInstance(), 5*60*20);
+
+                 player.teleport(trueLabLocations.get(random.nextInt(trueLabLocations.size())));
+                 effectManager.setResistance(player, 20);
+                 effectManager.setStrength(player, 40);
+
+                 for(Player nearbyPlayer : nearbyPlayers) {
+                     playerEffects.put(nearbyPlayer, effectManager.getEffectsMap(player));
+                     playerLocations.put(nearbyPlayer, nearbyPlayer.getLocation());
+                     nearbyPlayer.teleport(trueLabLocations.get(random.nextInt(trueLabLocations.size())));
+                     effectManager.removeEffects(nearbyPlayer);
+                     effectManager.setWeakness(nearbyPlayer, 20);
+                 }
+                 
+                 Bukkit.getPluginManager().registerEvents(new Listener() {
+                     @EventHandler
+                     private void OnDeath(PlayerDeathEvent event) {
+                         Player victim = event.getEntity().getPlayer();
+                         Player killer = event.getEntity().getKiller();
+                         if (isSans(playerManager.getPlayer(victim))) {
+                             if (isJudgeOn[0]) {
+                                 isJudgeOn[0] = false;
+                                 for(Map.Entry<Player, Map<PotionEffectType, Integer>> entry : playerEffects.entrySet()) {
+                                     Player nearbyPlayer = entry.getKey();
+                                     Map<PotionEffectType, Integer> effects = entry.getValue();
+                                     effectManager.setEffects(nearbyPlayer, effects);
+                                 }
+                                 for(Map.Entry<Player, Location> entry : playerLocations.entrySet()) {
+                                     Player nearbyPlayer = entry.getKey();
+                                     Location location = entry.getValue();
+                                     nearbyPlayer.teleport(location);
+                                 }
+                             }
+                         }
+                     }
+                 }, UndertaleUHC.getInstance());
+
+                 new BukkitRunnable() {
+                     @Override
+                     public void run() {
+                         if (isJudgeOn[0]) {
+                             for(Map.Entry<Player, Map<PotionEffectType, Integer>> entry : playerEffects.entrySet()) {
+                                 Player nearbyPlayer = entry.getKey();
+                                 Map<PotionEffectType, Integer> effects = entry.getValue();
+                                 effectManager.setEffects(nearbyPlayer, effects);
+                             }
+                             for(Map.Entry<Player, Location> entry : playerLocations.entrySet()) {
+                                 Player nearbyPlayer = entry.getKey();
+                                 Location location = entry.getValue();
+                                 nearbyPlayer.teleport(location);
+                             }
+                         }
+                     }
+                 }.runTaskLater(UndertaleUHC.getInstance(), 5*60*20);
+             }
         }
     }
 
@@ -157,7 +197,7 @@ public class SansListener implements Listener {
     }
 
     private void openSpecInventory(Player player, Player aimedPlayer) {
-        Inventory inventory = Bukkit.createInventory(null, 27, "Inventaire du joueur visée");
+        Inventory inventory = Bukkit.createInventory(null, 36, "Inventaire du joueur visée");
         ItemStack[] content = aimedPlayer.getInventory().getContents();
         inventory.setContents(content);
         player.openInventory(inventory);

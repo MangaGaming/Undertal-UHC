@@ -4,7 +4,8 @@ import java.util.*;
 
 import com.mguhc.undertale.roles.humain.HumainListener;
 import com.mguhc.undertale.roles.humain.chara.CharaListener;
-import com.mguhc.undertale.roles.monstre.SansListener;
+import com.mguhc.undertale.roles.monstre.papyrus.PapyrusListener;
+import com.mguhc.undertale.roles.monstre.sans.SansListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -60,6 +61,7 @@ public class UndertaleUHC extends JavaPlugin {
         pluginManager.registerEvents(new FriskListener(), this);
         pluginManager.registerEvents(new CharaListener(), this);
         pluginManager.registerEvents(new SansListener(), this);
+        pluginManager.registerEvents(new PapyrusListener(), this);
     }
 
     private void initializeCamp() {
