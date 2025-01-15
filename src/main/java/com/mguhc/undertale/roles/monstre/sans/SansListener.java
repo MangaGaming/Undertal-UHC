@@ -101,14 +101,14 @@ public class SansListener implements Listener {
          }
          if (args.length == 2 && args[0].equalsIgnoreCase("/ut") && args[1].equals("judge")) {
              if(judgeCount <= 2) {
-                 final boolean[] isJudgeOn = {true};
+                 boolean[] isJudgeOn = {true};
                  judgeCount++;
                  player.sendMessage("Judge Utilisé");
                  // Trouver un joueur à proximité
                  List<Location> trueLabLocations = Arrays.asList(
-                         new Location(Bukkit.getWorld("world"), 100, 100, 100),
-                         new Location(Bukkit.getWorld("world"), 50, 100, 50),
-                         new Location(Bukkit.getWorld("world"), 100, 100, 50));
+                         new Location(Bukkit.getWorld("world"), 100, 102, 100),
+                         new Location(Bukkit.getWorld("world"), 50, 102, 50),
+                         new Location(Bukkit.getWorld("world"), 100, 102, 50));
 
                  List<Player> nearbyPlayers = new ArrayList<>();
                  Random random = new Random();
@@ -122,6 +122,9 @@ public class SansListener implements Listener {
                          nearbyPlayers.add(nearbyPlayer);
                      }
                  }
+
+                 playerEffects.put(player, effectManager.getEffectsMap(player));
+                 playerLocations.put(player, player.getLocation());
 
                  player.teleport(trueLabLocations.get(random.nextInt(trueLabLocations.size())));
                  effectManager.setResistance(player, 20);
@@ -162,6 +165,7 @@ public class SansListener implements Listener {
                      @Override
                      public void run() {
                          if (isJudgeOn[0]) {
+                             isJudgeOn[0] = false;
                              for(Map.Entry<Player, Map<PotionEffectType, Integer>> entry : playerEffects.entrySet()) {
                                  Player nearbyPlayer = entry.getKey();
                                  Map<PotionEffectType, Integer> effects = entry.getValue();
@@ -174,7 +178,7 @@ public class SansListener implements Listener {
                              }
                          }
                      }
-                 }.runTaskLater(UndertaleUHC.getInstance(), 5*60*20);
+                 }.runTaskLater(UndertaleUHC.getInstance(), 30*20);
              }
         }
     }
