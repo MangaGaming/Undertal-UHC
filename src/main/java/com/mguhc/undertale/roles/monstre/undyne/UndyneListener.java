@@ -68,9 +68,6 @@ public class UndyneListener implements Listener {
                 }
             }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20*3);
         }
-        else {
-            Bukkit.getLogger().warning("Le joueur Undyne n'a pas été trouvé.");
-        }
     }
 
     @EventHandler
@@ -122,6 +119,7 @@ public class UndyneListener implements Listener {
         currentForm = "distance";
     }
 
+    @EventHandler
     private void OnMsg(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String[] args = event.getMessage().split(" ");

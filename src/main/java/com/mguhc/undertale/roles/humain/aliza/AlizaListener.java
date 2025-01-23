@@ -158,7 +158,7 @@ public class AlizaListener implements Listener {
     }
 
     private boolean isAliza(UhcPlayer uhc_player) {
-        return uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Aliza");
+        return uhc_player != null && uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Aliza");
     }
 
     private ItemStack getSoulItem() {

@@ -95,30 +95,23 @@ public class ElieListener implements Listener {
                 @Override
                 public void run() {
                     if (UhcAPI.getInstance().getUhcGame().getTimePassed() == 40 * 60) {
-                        UhcPlayer uhc_elie = roleManager.getPlayerWithRole("Elie");
-                        if (uhc_elie == null) {
-                            this.cancel();
-                        } else {
-                            Player elie = uhc_elie.getPlayer();
+                        // Récupérer les joueurs dans le camp humain
+                        List<UhcPlayer> humanPlayers = roleManager.getPlayersInCamp("Humain");
+                        StringBuilder message = new StringBuilder();
+                        message.append("Joueurs dans le camp humain :\n");
 
-                            // Récupérer les joueurs dans le camp humain
-                            List<UhcPlayer> humanPlayers = roleManager.getPlayersInCamp("Humain");
-                            StringBuilder message = new StringBuilder();
-                            message.append("Joueurs dans le camp humain :\n");
-
-                            // Ajouter chaque joueur à la liste
-                            for (UhcPlayer uhcPlayer : humanPlayers) {
-                                message.append("- ").append(uhcPlayer.getPlayer().getName()).append("\n");
-                            }
-
-                            // Envoyer le message à Elie
-                            elie.sendMessage(message.toString());
-
-                            this.cancel();
+                        // Ajouter chaque joueur à la liste
+                        for (UhcPlayer uhcPlayer : humanPlayers) {
+                            message.append("- ").append(uhcPlayer.getPlayer().getName()).append("\n");
                         }
+
+                        // Envoyer le message à Elie
+                        player.sendMessage(message.toString());
+
+                        this.cancel();
                     }
                 }
-            }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20);
+            }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20);
         }
     }
 
@@ -433,6 +426,6 @@ public class ElieListener implements Listener {
 	
 
     private boolean isElie(UhcPlayer uhc_player) {
-        return uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Elie");
+        return uhc_player != null && uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Elie");
     }
 }

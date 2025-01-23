@@ -299,7 +299,7 @@ public class FriskListener implements Listener {
 	}
 
 	private boolean isFrisk(UhcPlayer player) {
-		return player.getRole() != null && player.getRole().getName().equals("Frisk");
+		return player != null && player.getRole() != null && player.getRole().getName().equals("Frisk");
 	}
 
 	private ItemStack getSoulItem() {

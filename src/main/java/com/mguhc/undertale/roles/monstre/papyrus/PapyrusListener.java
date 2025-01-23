@@ -52,6 +52,7 @@ public class PapyrusListener implements Listener {
         }
     }
 
+    @EventHandler
     private void OnRoleGive(RoleGiveEvent event) {
         UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Papyrus");
         if(uhcPlayer != null) {
@@ -69,9 +70,12 @@ public class PapyrusListener implements Listener {
                 blue.setItemMeta(blue_meta);
             }
             player.getInventory().addItem(blue);
+
+            effectManager.setNoFall(player, true);
         }
     }
 
+    @EventHandler
     private void OnInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
@@ -102,16 +106,6 @@ public class PapyrusListener implements Listener {
                 if (player.getNearbyEntities(15, 15, 15).contains(sans.getPlayer())) {
                     effectManager.setResistance(player, 20);
                 }
-            }
-        }
-    }
-
-    @EventHandler
-    private void OnDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (isPapyrus(playerManager.getPlayer(player)) && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-                event.setCancelled(true);
             }
         }
     }
@@ -160,7 +154,6 @@ public class PapyrusListener implements Listener {
     }
 
     private boolean isPapyrus(UhcPlayer uhcPlayer) {
-        UhcRole role = uhcPlayer.getRole();
-        return role != null && role.getName().equals("Papyrus");
+        return uhcPlayer != null && uhcPlayer.getRole() != null && uhcPlayer.getRole().getName().equals("Papyrus");
     }
 }

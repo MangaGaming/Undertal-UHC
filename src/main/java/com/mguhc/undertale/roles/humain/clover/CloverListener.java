@@ -189,7 +189,7 @@ public class CloverListener implements Listener {
     }
 
     private boolean isClover(UhcPlayer uhc_player) {
-        return uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Clover");
+        return uhc_player != null && uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Clover");
     }
 
     private UhcPlayer getPlayerWithSoul() {

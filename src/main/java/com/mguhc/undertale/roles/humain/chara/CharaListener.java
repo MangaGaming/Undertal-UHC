@@ -318,8 +318,7 @@ public class CharaListener implements Listener {
     }
 
     private boolean isChara(UhcPlayer player) {
-        UhcRole role = player.getRole();
-        return role != null && role.getName().equals("Chara");
+        return player != null && player.getRole() != null && player.getRole().getName().equals("Chara");
     }
 
     private ItemStack getSoulItem() {

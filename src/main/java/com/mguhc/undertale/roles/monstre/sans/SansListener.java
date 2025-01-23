@@ -226,7 +226,6 @@ public class SansListener implements Listener {
     }
 
     private boolean isSans(UhcPlayer player) {
-        UhcRole role = player.getRole();
-        return role != null && role.getName().equals("Sans");
+        return player != null && player.getRole() != null && player.getRole().getName().equals("Sans");
     }
 }

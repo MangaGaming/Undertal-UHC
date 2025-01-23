@@ -317,7 +317,7 @@ public class ErikListener implements Listener {
     }
 
     private boolean isErik(UhcPlayer uhc_player) {
-        return uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Erik");
+        return uhc_player != null && uhc_player.getRole() != null && uhc_player.getRole().getName().equals("Erik");
     }
 
     private ItemStack getSoulItem() {
