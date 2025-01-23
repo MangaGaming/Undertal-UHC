@@ -4,11 +4,16 @@ import java.util.*;
 
 import com.mguhc.undertale.roles.humain.HumainListener;
 import com.mguhc.undertale.roles.humain.chara.CharaListener;
+import com.mguhc.undertale.roles.monstre.asgore.AsgoreListener;
+import com.mguhc.undertale.roles.monstre.asriel.AsrielListener;
+import com.mguhc.undertale.roles.monstre.flowey.FloweyListener;
 import com.mguhc.undertale.roles.monstre.mettaton.MettatonListener;
 import com.mguhc.undertale.roles.monstre.napstablook.NapstablookListener;
 import com.mguhc.undertale.roles.monstre.papyrus.PapyrusListener;
 import com.mguhc.undertale.roles.monstre.sans.SansListener;
 import com.mguhc.undertale.roles.monstre.undyne.UndyneListener;
+import com.mguhc.undertale.roles.solo.gaster.GasterListener;
+import com.mguhc.undertale.roles.solo.player.PlayerRoleListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -68,6 +73,11 @@ public class UndertaleUHC extends JavaPlugin {
         pluginManager.registerEvents(new UndyneListener(), this);
         pluginManager.registerEvents(new NapstablookListener(), this);
         pluginManager.registerEvents(new MettatonListener(), this);
+        pluginManager.registerEvents(new AsrielListener(), this);
+        pluginManager.registerEvents(new AsgoreListener(), this);
+        pluginManager.registerEvents(new FloweyListener(), this);
+        pluginManager.registerEvents(new GasterListener(), this);
+        pluginManager.registerEvents(new PlayerRoleListener(), this);
     }
 
     private void initializeCamp() {
