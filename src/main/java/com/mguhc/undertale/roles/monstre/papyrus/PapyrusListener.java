@@ -11,11 +11,12 @@ import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -24,8 +25,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PapyrusListener implements Listener {
 
@@ -129,14 +132,30 @@ public class PapyrusListener implements Listener {
     }
 
     private Player getTargetPlayer(Player player) {
-        // Méthode simplifiée pour détecter un joueur devant celui qui a utilisé l'item
-        for (Player target : Bukkit.getOnlinePlayers()) {
-            if (target != player && target.getLocation().distance(player.getLocation()) <= 20) { // distance approximative de 5 blocs
-                return target;
+        // Get the player's eye location and direction
+        Location eyeLocation = player.getEyeLocation();
+        Vector direction = eyeLocation.getDirection().normalize();
+
+        // Get nearby entities within the specified distance
+        List<Entity> nearbyEntities = player.getNearbyEntities(20, 20, 20);
+
+        for (Entity entity : nearbyEntities) {
+            if (entity instanceof Player && entity != player) {
+                // Check if the entity is in the line of sight
+                Vector toEntity = entity.getLocation().toVector().subtract(eyeLocation.toVector()).normalize();
+                double dotProduct = direction.dot(toEntity);
+
+                // Check if the entity is within the player's line of sight
+                if (dotProduct > 0.9) { // Adjust the threshold for precision
+                    return (Player) entity; // Return the target player
+                }
             }
         }
-        return null; // Aucun joueur trouvé
+        return null; // No target player found
     }
+
+
+
 
     @EventHandler
     private void OnDeath(PlayerDeathEvent event) {
