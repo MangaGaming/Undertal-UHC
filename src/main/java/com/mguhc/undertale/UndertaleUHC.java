@@ -12,7 +12,9 @@ import com.mguhc.undertale.roles.monstre.napstablook.NapstablookListener;
 import com.mguhc.undertale.roles.monstre.papyrus.PapyrusListener;
 import com.mguhc.undertale.roles.monstre.sans.SansListener;
 import com.mguhc.undertale.roles.monstre.undyne.UndyneListener;
+import com.mguhc.undertale.roles.solo.gaster.AmalganteTask;
 import com.mguhc.undertale.roles.solo.gaster.GasterListener;
+import com.mguhc.undertale.roles.solo.gaster.TruLabTask;
 import com.mguhc.undertale.roles.solo.player.PlayerRoleListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,12 +53,12 @@ public class UndertaleUHC extends JavaPlugin {
 
             @Override
             public void run() {
-                registerListeners();
+                registerListenersRunable();
             }
         }.runTaskLater(this, 2);
     }
 
-    protected void registerListeners() {
+    protected void registerListenersRunable() {
         // Enregistrement des écouteurs d'événements après l'initialisation
         PluginManager pluginManager = getServer().getPluginManager();
         HumainListener humainListener = new HumainListener();
@@ -78,6 +80,14 @@ public class UndertaleUHC extends JavaPlugin {
         pluginManager.registerEvents(new FloweyListener(), this);
         pluginManager.registerEvents(new GasterListener(), this);
         pluginManager.registerEvents(new PlayerRoleListener(), this);
+
+        TruLabTask trueLabTask = new TruLabTask();
+        trueLabTask.runTaskTimer(this, 0, 20);
+        pluginManager.registerEvents(trueLabTask, this);
+
+        AmalganteTask amalganteTask = new AmalganteTask();
+        amalganteTask.runTaskTimer(this, 0, 20);
+        pluginManager.registerEvents(amalganteTask, this);
     }
 
     private void initializeCamp() {
@@ -153,6 +163,7 @@ public class UndertaleUHC extends JavaPlugin {
         roles.add(role);
         roleMap.put(name, role); // Store the role in the map
     }
+
 
     public static UndertaleUHC getInstance() {
         return instance;
