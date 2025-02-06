@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -41,6 +42,7 @@ public class PlayerRoleListener implements Listener {
     private Location ancientLocation;
     private Ability espionAbility;
     private boolean canUseBrouiller = true;
+    private List<Player> playerSpectated;
 
     public PlayerRoleListener() {
         UhcAPI api = UhcAPI.getInstance();
@@ -72,7 +74,7 @@ public class PlayerRoleListener implements Listener {
         Player player = event.getPlayer();
         String[] args = event.getMessage().split(" ");
 
-        if (args.length == 4 && args[0].equals("/ut") && args[1].equals("manipulation")) {
+        if (args.length == 4 && args[0].equals("/ut") && args[1].equals("manipulation") && isPlayer(player)) {
             Player forced =  Bukkit.getPlayer(args[2]);
             Player target = Bukkit.getPlayer(args[3]);
             if (forced != null && target != null) {
@@ -104,7 +106,7 @@ public class PlayerRoleListener implements Listener {
                 }
             }
         }
-        if (args.length == 3 && args[0].equals("/ut") && args[1].equals("espion")) {
+        if (args.length == 3 && args[0].equals("/ut") && args[1].equals("espion") && isPlayer(player)) {
             Player target = Bukkit.getPlayer(args[2]);
             if (target != null) {
                 if (cooldownManager.getRemainingCooldown(player, espionAbility) == 0) {
@@ -126,13 +128,19 @@ public class PlayerRoleListener implements Listener {
             }
         }
 
-        if (args.length == 2 && args[0].equals("/ut") && args[1].equals("brouiller")) {
+        if (args.length == 2 && args[0].equals("/ut") && args[1].equals("brouiller") && isPlayer(player)) {
             if (canUseBrouiller) {
                 canUseBrouiller = false;
                 for (Entity e : player.getNearbyEntities(15, 15, 15)) {
                     if (e instanceof Player) {
                         Player p = (Player) e;
                         p.sendMessage(ChatColor.RED + "Vous avez été touché par le pouvoir du /ut brouiller de Player veuillez couper votre micro");
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                p.sendMessage("Vous pouvez remettre votre micro");
+                            }
+                        }.runTaskLater(UndertaleUHC.getInstance(), 10*20);
                     }
                 }
             }
@@ -156,6 +164,23 @@ public class PlayerRoleListener implements Listener {
         }
     }
 
+    @EventHandler
+    private void OnMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (isPlayer(player)) {
+            for (Entity e : player.getNearbyEntities(5, 5, 5)) {
+                if (e instanceof Player) {
+                    Player p = (Player) e;
+                    if(p.getInventory().contains(getGasterItem()) &&
+                       !playerSpectated.contains(p)) {
+                        player.sendMessage(ChatColor.DARK_PURPLE + "Une aura obscure vous menace");
+                        playerSpectated.add(p);
+                    }
+                }
+            }
+        }
+    }
+
     private ItemStack getDispertionItem() {
         ItemStack item = new ItemStack(Material.NETHER_STAR);
         ItemMeta meta = item.getItemMeta();
@@ -164,5 +189,20 @@ public class PlayerRoleListener implements Listener {
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    private ItemStack getGasterItem() {
+        ItemStack gaster = new ItemStack(Material.NETHER_STAR);
+        ItemMeta gasterMeta = gaster.getItemMeta();
+        if(gasterMeta != null) {
+            gasterMeta.setDisplayName(ChatColor.DARK_PURPLE + "Fragment de Gaster");
+            gaster.setItemMeta(gasterMeta);
+        }
+        return gaster;
+    }
+
+    private boolean isPlayer(Player player) {
+        UhcPlayer uhcPlayer = playerManager.getPlayer(player);
+        return uhcPlayer != null && uhcPlayer.getRole() != null && uhcPlayer.getRole().getName().equals("Player");
     }
 }
