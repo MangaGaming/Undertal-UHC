@@ -137,7 +137,7 @@ public class ElieListener implements Listener {
                             // Vérifier si le joueur est immobile depuis 10 secondes
                             if (currentTime - immobileTime.get(player) >= 10000) { // 10 secondes
                                 double health = player.getHealth();
-                                if(health < 20) {
+                                if(health <= 20) {
                                     player.setHealth(player.getHealth() + 0.5);
                                 }
                                 List<Entity> nearbyEntities = player.getNearbyEntities(5, 5, 5);

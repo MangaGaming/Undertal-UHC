@@ -65,7 +65,7 @@ public class AsgoreListener implements Listener {
             // Récupérer les joueurs dans le camp humain
             List<UhcPlayer> monstrePlayers = roleManager.getPlayersInCamp("Monstre");
             StringBuilder message = new StringBuilder();
-            message.append("Joueurs dans le camp humain :\n");
+            message.append("Joueurs dans le camp monstre :\n");
 
             // Ajouter chaque joueur à la liste
             for (UhcPlayer monstre : monstrePlayers) {

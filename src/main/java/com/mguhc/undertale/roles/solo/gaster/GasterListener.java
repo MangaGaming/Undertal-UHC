@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
@@ -34,6 +35,7 @@ public class GasterListener implements Listener {
 
     private boolean trueLabForm = false;
     private int gasterBlasterCount;
+    private boolean isInWaiting = false;
 
     public GasterListener() {
         UhcAPI api = UhcAPI.getInstance();
@@ -50,6 +52,9 @@ public class GasterListener implements Listener {
         if (uhcPlayer != null) {
             Player player = uhcPlayer.getPlayer();
             effectManager.setWeakness(player, 20);
+            player.getInventory().addItem(getGasterItem());
+            player.getInventory().addItem(getGasterItem());
+            player.getInventory().addItem(getGasterItem());
 
             new BukkitRunnable() {
                 @Override
@@ -72,26 +77,25 @@ public class GasterListener implements Listener {
         Block block = event.getClickedBlock();
 
         // Interaction avec le coffre
-        if (block != null && block.getType() == Material.CHEST && block.getLocation().getY() == 247) {
-            int gasterFrag = 0;
-            for (ItemStack i : player.getInventory().getContents()) {
-                if (i != null && i.equals(getGasterItem())) {
-                    gasterFrag++;
-                    if (gasterFrag >= 3) {
-                        break;
-                    }
-                }
-            }
-            if (gasterFrag == 3) {
-                player.getInventory().remove(getGasterItem());
+        if (block != null && block.getType() == Material.CHEST && player.getLocation().getY() > 200 &&
+            !isInWaiting) {
+            event.setCancelled(true);
+            if (player.getInventory().containsAtLeast(getGasterItem(), 3)) {
+                player.sendMessage(ChatColor.GREEN + "Vous passerez en forme True Lab dans 5 min");
+                isInWaiting = true;
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         if (!player.isDead() && player.isOnline()) {
+                            player.sendMessage(ChatColor.GREEN + "Vous êtes passé en forme True Lab");
+                            isInWaiting = false;
                             addTrueLabFormEffect(player);
                         }
                     }
-                }.runTaskLater(UndertaleUHC.getInstance(), 5 * 60 * 20);
+                }.runTaskLater(UndertaleUHC.getInstance(), 5*60*20);
+            }
+            else {
+                player.sendMessage("Pas assez de fragment de Gaster pour ouvrir le coffre.");
             }
         }
 
@@ -139,6 +143,17 @@ public class GasterListener implements Listener {
                         hitPlayer.getWorld().strikeLightning(hitPlayer.getLocation());
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    private void OnMove(PlayerMoveEvent event) {
+        if (isInWaiting) {
+            Player player = event.getPlayer();
+            if (player.getLocation().getX() < -13) {
+                isInWaiting = false;
+                player.sendMessage(ChatColor.RED + "Vous êtes sortie de la zone");
             }
         }
     }

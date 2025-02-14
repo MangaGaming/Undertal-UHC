@@ -195,7 +195,7 @@ public class CharaListener implements Listener {
                     player.sendMessage(ChatColor.RED + "Vous avez choisi de trahir les humains");
                     roleManager.setCamp(playerManager.getPlayer(player), roleManager.getCamps().get(1));
                     effectManager.setStrength(player, 20);
-                    effectManager.setSpeed(player, 120);
+                    effectManager.setSpeed(player, 20);
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -303,7 +303,8 @@ public class CharaListener implements Listener {
             for(Entity entity : player.getNearbyEntities(15,15,15)) {
                 if(entity instanceof Player) {
                     Player nearbyPlayer = (Player) entity;
-                    if(nearbyPlayer.getGameMode().equals(GameMode.SURVIVAL)) {
+                    if(nearbyPlayer.getGameMode().equals(GameMode.SURVIVAL) &&
+                        !isChara(playerManager.getPlayer(nearbyPlayer))) {
                         nearbyPlayers.add(player);
                     }
                 }

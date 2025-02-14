@@ -2,7 +2,12 @@ package com.mguhc.undertale.roles.solo.gaster;
 
 import com.mguhc.UhcAPI;
 import com.mguhc.game.UhcGame;
+import com.mguhc.player.UhcPlayer;
+import net.minecraft.server.v1_8_R3.EntityBlaze;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftBlaze;
+import org.bukkit.entity.Blaze;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -35,9 +40,23 @@ public class AmalganteTask extends BukkitRunnable implements Listener {
 
     private void spawnFrag(String name, Location location) {
         // Spawner le frag (entité) à la location donnée
-        Entity frag = location.getWorld().spawnEntity(location, EntityType.BLAZE); // Remplacez EntityType.ZOMBIE par le type d'entité souhaité
+        Blaze frag = (Blaze) location.getWorld().spawnEntity(location, EntityType.BLAZE); // Remplacez EntityType.ZOMBIE par le type d'entité souhaité
+        disableAi(frag);
         frag.setCustomName(name); // Définir le nom de l'entité
         frag.setCustomNameVisible(true); // Rendre le nom visible
+        UhcPlayer gaster = UhcAPI.getInstance().getRoleManager().getPlayerWithRole("W.D Gaster");
+        if (gaster != null) {
+            Player player = gaster.getPlayer();
+            player.sendMessage(ChatColor.GREEN + "Un fragment de Gaster est apparue en " + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ());
+        }
+    }
+
+    private void disableAi(Blaze frag) {
+        EntityBlaze nmsBlaze = ((CraftBlaze) frag).getHandle();
+        NBTTagCompound tag = new NBTTagCompound();
+        nmsBlaze.e(tag); // Récupérer les données de l'entité
+        tag.setBoolean("NoAI", true); // Définir le tag NoAI à true
+        nmsBlaze.f(tag); // Appliquer les données modifiées à l'entité
     }
 
     private Location getRandomLocation() {
@@ -45,8 +64,8 @@ public class AmalganteTask extends BukkitRunnable implements Listener {
         World world = Bukkit.getWorld("world");
 
         // Générer des coordonnées aléatoires à 250 blocs du point d'origine
-        int x = random.nextInt(501) + 250;
-        int z = random.nextInt(501) + 250;
+        int x = random.nextInt(501) - 250;
+        int z = random.nextInt(501) - 250;
 
         // Créer la nouvelle location
         return new Location(world, x, world.getHighestBlockYAt(x, z), z);

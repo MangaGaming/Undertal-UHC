@@ -12,6 +12,7 @@ import com.mguhc.undertale.roles.monstre.napstablook.NapstablookListener;
 import com.mguhc.undertale.roles.monstre.papyrus.PapyrusListener;
 import com.mguhc.undertale.roles.monstre.sans.SansListener;
 import com.mguhc.undertale.roles.monstre.undyne.UndyneListener;
+import com.mguhc.undertale.roles.solo.betty.BettyListener;
 import com.mguhc.undertale.roles.solo.gaster.AmalganteTask;
 import com.mguhc.undertale.roles.solo.gaster.GasterListener;
 import com.mguhc.undertale.roles.solo.gaster.TruLabTask;
@@ -34,7 +35,7 @@ public class UndertaleUHC extends JavaPlugin {
 
     private static UndertaleUHC instance;
     private List<UhcRole> roles;
-    private Map<String, UhcRole> roleMap; // Map to store roles by name
+    private Map<String, UhcRole> roleMap;
 
     public void onEnable() {
         instance = this;
@@ -80,6 +81,7 @@ public class UndertaleUHC extends JavaPlugin {
         pluginManager.registerEvents(new FloweyListener(), this);
         pluginManager.registerEvents(new GasterListener(), this);
         pluginManager.registerEvents(new PlayerRoleListener(), this);
+        pluginManager.registerEvents(new BettyListener(), this);
 
         TruLabTask trueLabTask = new TruLabTask();
         trueLabTask.runTaskTimer(this, 0, 20);
