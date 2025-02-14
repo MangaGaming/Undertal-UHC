@@ -72,7 +72,7 @@ public class HumainListener implements Listener {
         for (String pair : pairs) {
             // Envoyer le message à tous les joueurs dans le camp "Humain"
             for (UhcPlayer player : playersInHumain) {
-                player.getPlayer().sendMessage(pair);
+                player.getPlayer().sendMessage("§a" + pair);
             }
         }
     }

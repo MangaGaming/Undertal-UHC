@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.mguhc.effect.EffectManager;
 import com.mguhc.events.RoleGiveEvent;
+import com.mguhc.events.UhcDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -308,8 +309,8 @@ public class ErikListener implements Listener {
         }
 
     @EventHandler
-    private void OnDeath(PlayerDeathEvent event) {
-        Player killer = event.getEntity().getKiller();
+    private void OnDeath(UhcDeathEvent event) {
+        Player killer = event.getKiller();
         if (killer != null && isErik(playerManager.getPlayer(killer))) {
         	event.getDrops().remove(getSoulItem());
             killer.setMaxHealth(killer.getMaxHealth() + 1);

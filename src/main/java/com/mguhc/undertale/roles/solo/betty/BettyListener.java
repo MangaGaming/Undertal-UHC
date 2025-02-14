@@ -5,6 +5,7 @@ import com.mguhc.ability.AbilityManager;
 import com.mguhc.ability.CooldownManager;
 import com.mguhc.effect.EffectManager;
 import com.mguhc.events.RoleGiveEvent;
+import com.mguhc.events.UhcDeathEvent;
 import com.mguhc.player.PlayerManager;
 import com.mguhc.player.UhcPlayer;
 import com.mguhc.roles.RoleManager;
@@ -104,9 +105,9 @@ public class BettyListener implements Listener {
     }
 
     @EventHandler
-    private void OnDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity().getPlayer();
-        Player killer = event.getEntity().getKiller();
+    private void OnDeath(UhcDeathEvent event) {
+        Player victim = event.getPlayer();
+        Player killer = event.getKiller();
         if (killer != null) {
             if (isBetty(killer) && currentForme.equals("Protectrice")) {
                 killer.setHealth(killer.getHealth() + 2);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.mguhc.events.RoleGiveEvent;
+import com.mguhc.events.UhcDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -152,9 +153,9 @@ public class CloverListener implements Listener {
     }
 
     @EventHandler
-    public void OnDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity().getPlayer();
-        Player killer = event.getEntity().getKiller();
+    public void OnDeath(UhcDeathEvent event) {
+        Player victim = event.getPlayer();
+        Player killer = event.getKiller();
         if (killer != null &&
                 isClover(playerManager.getPlayer(killer)) &&
                 !cooldownManager.isInCooldown(killer, balanceAbility)) {
@@ -185,7 +186,7 @@ public class CloverListener implements Listener {
     private boolean isAlly(UhcPlayer player, UhcPlayer potentialAlly) {
         Camp playerCamp = UhcAPI.getInstance().getRoleManager().getCamp(player);
         Camp allyCamp = UhcAPI.getInstance().getRoleManager().getCamp(potentialAlly);
-        return playerCamp != null && allyCamp != null && playerCamp.equals(allyCamp);
+        return playerCamp != null && playerCamp.equals(allyCamp);
     }
 
     private boolean isClover(UhcPlayer uhc_player) {

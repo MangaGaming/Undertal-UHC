@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mguhc.events.RoleGiveEvent;
+import com.mguhc.events.UhcDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -347,9 +348,9 @@ public class ElieListener implements Listener {
     }
     
     @EventHandler
-    private void OnDeath(PlayerDeathEvent event) {
-    	Player victim = event.getEntity();
-    	Player killer = event.getEntity().getKiller();
+    private void OnDeath(UhcDeathEvent event) {
+    	Player victim = event.getPlayer();
+    	Player killer = event.getKiller();
     	if(isElie(playerManager.getPlayer(victim))) {
     		if(killer != null) {
     			startTimer(killer);

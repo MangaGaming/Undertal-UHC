@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mguhc.events.RoleGiveEvent;
+import com.mguhc.events.UhcDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -163,9 +164,9 @@ public class CodyListener implements Listener {
     }
     
     @EventHandler
-    private void OnDeath(PlayerDeathEvent event) {
-        Player victim = event.getEntity().getPlayer();
-        Player killer = event.getEntity().getKiller();
+    private void OnDeath(UhcDeathEvent event) {
+        Player victim = event.getPlayer();
+        Player killer = event.getKiller();
         if (killer != null && victim.getInventory().contains(getSoulItem())) {
             List<ItemStack> drops = event.getDrops();
             drops.remove(getSoulItem());
