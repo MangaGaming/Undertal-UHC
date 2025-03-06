@@ -137,7 +137,7 @@ public class CodyListener implements Listener {
 
                     // Démarrer le cooldown
                     cooldownManager.startCooldown(player, codyAbility);
-                    effectManager.setResistance(aimedPlayer, 5);
+                    effectManager.setResistance(aimedPlayer, 0.25);
                 } else {
                     player.sendMessage(ChatColor.RED + "Le joueur ciblé n'est pas en ligne.");
                 }

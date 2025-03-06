@@ -108,9 +108,9 @@ public class AsrielListener implements Listener {
             canUseHyperdash) {
             canUseHyperdash = false;
             player.sendMessage("Vous avez gagnés vos effets");
-            effectManager.setSpeed(player, 20);
-            effectManager.setResistance(player , 20);
-            effectManager.setStrength(player, 20);
+            effectManager.setSpeed(player, 1);
+            effectManager.setResistance(player , 1);
+            effectManager.setStrength(player, 1);
             effectManager.setNoFall(player, true);
             new BukkitRunnable() {
                 @Override
@@ -119,7 +119,7 @@ public class AsrielListener implements Listener {
                     effectManager.removeEffect(player, PotionEffectType.DAMAGE_RESISTANCE);
                     effectManager.removeEffect(player, PotionEffectType.INCREASE_DAMAGE);
                     effectManager.setNoFall(player, false);
-                    effectManager.setWeakness(player, 20);
+                    effectManager.setWeakness(player, 1);
                     player.setMaxHealth(player.getMaxHealth() - 4);
                     player.sendMessage("Vous avez perdu vos effets");
                 }

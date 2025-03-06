@@ -59,7 +59,7 @@ public class AsgoreListener implements Listener {
         if (uhcPlayer != null) {
             Player player = uhcPlayer.getPlayer();
 
-            effectManager.setResistance(player, 40);
+            effectManager.setResistance(player, 2);
             player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
 
             // Récupérer les joueurs dans le camp humain

@@ -58,7 +58,7 @@ public class NapstablookListener implements Listener {
             }
             Player player = uhcPlayer.getPlayer();
             player.getInventory().addItem(book);
-            effectManager.setWeakness(player, 30);
+            effectManager.setWeakness(player, 1.5);
             // Initialiser le temps d'immobilité
             immobilePlayers.put(player, System.currentTimeMillis());
 

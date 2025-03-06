@@ -108,7 +108,7 @@ public class PapyrusListener implements Listener {
             UhcPlayer sans = roleManager.getPlayerWithRole("Sans");
             if (sans != null) {
                 if (player.getNearbyEntities(15, 15, 15).contains(sans.getPlayer())) {
-                    effectManager.setResistance(player, 20);
+                    effectManager.setResistance(player, 1);
                 }
             }
         }
@@ -126,7 +126,7 @@ public class PapyrusListener implements Listener {
                 if (target != null) {
                     canUseSpag = false;
                     player.setMaxHealth(player.getMaxHealth() + 2);
-                    effectManager.setSpeed(player, 20);
+                    effectManager.setSpeed(player, 1);
                 }
             }
         }

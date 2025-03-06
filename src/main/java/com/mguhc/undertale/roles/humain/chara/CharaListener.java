@@ -92,7 +92,7 @@ public class CharaListener implements Listener {
                 public void run() {
                     long time = uhcPlayer.getPlayer().getWorld().getTime(); // Obtenir le temps actuel dans le monde
                     if (time >= 0 && time < 12000) { // Vérifier si c'est le jour
-                        effectManager.setResistance(uhcPlayer.getPlayer(), 20);
+                        effectManager.setResistance(uhcPlayer.getPlayer(), 1);
                     } else {
                         effectManager.removeEffect(uhcPlayer.getPlayer(), PotionEffectType.DAMAGE_RESISTANCE);
                     }
@@ -194,8 +194,8 @@ public class CharaListener implements Listener {
                     canUseRoad = false;
                     player.sendMessage(ChatColor.RED + "Vous avez choisi de trahir les humains");
                     roleManager.setCamp(playerManager.getPlayer(player), roleManager.getCamps().get(1));
-                    effectManager.setStrength(player, 20);
-                    effectManager.setSpeed(player, 20);
+                    effectManager.setStrength(player, 1);
+                    effectManager.setSpeed(player, 1);
                     new BukkitRunnable() {
                         @Override
                         public void run() {

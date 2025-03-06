@@ -93,11 +93,11 @@ public class ErikListener implements Listener {
                 public void run() {
                     UhcPlayer uhc_player = roleManager.getPlayerWithRole("Erik");
                     if (uhc_player != null) {
-                        long time = uhc_player.getPlayer().getWorld().getTime(); // Obtenir le temps actuel dans le monde
+                        long time = player.getWorld().getTime(); // Obtenir le temps actuel dans le monde
                         if (time >= 0 && time < 12000) { // Vérifier si c'est le jour
-                            effectManager.setStrength(uhc_player.getPlayer(), 20);
+                            effectManager.setStrength(player, 1);
                         } else {
-                            effectManager.removeEffect(uhc_player.getPlayer(), PotionEffectType.INCREASE_DAMAGE);
+                            effectManager.removeEffect(player, PotionEffectType.INCREASE_DAMAGE);
                         }
                     }
                 }

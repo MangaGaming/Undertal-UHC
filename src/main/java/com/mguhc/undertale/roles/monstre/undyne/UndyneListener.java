@@ -60,10 +60,10 @@ public class UndyneListener implements Listener {
                     long time = player.getWorld().getTime(); // Obtenir le temps actuel dans le monde
                     if (time >= 0 && time < 12000) {
                         effectManager.removeEffect(player, PotionEffectType.INCREASE_DAMAGE);// Vérifier si c'est le jour
-                        effectManager.setResistance(player, 20);
+                        effectManager.setResistance(player, 1);
                     } else {
                         effectManager.removeEffect(player.getPlayer(), PotionEffectType.DAMAGE_RESISTANCE);
-                        effectManager.setStrength(player, 20);
+                        effectManager.setStrength(player, 1);
                     }
                 }
             }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20*3);
@@ -114,7 +114,7 @@ public class UndyneListener implements Listener {
 
         effectManager.removeEffects(player);
         player.setMaxHealth(player.getMaxHealth() - 6);
-        effectManager.setSpeed(player, 40);
+        effectManager.setSpeed(player, 2);
         player.sendMessage(ChatColor.BLUE + "Vous êtes passé en forme Distance!");
         currentForm = "distance";
     }

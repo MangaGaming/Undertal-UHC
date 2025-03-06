@@ -70,7 +70,7 @@ public class BettyListener implements Listener {
         if (item != null && item.equals(getFormItem())) {
             switch (currentForme) {
                 case "Ethérée":
-                    effectManager.setStrength(player, 20);
+                    effectManager.setStrength(player, 1);
                     currentForme = "Terrifiante";
                     break;
                 case "Terrifiante":
@@ -125,7 +125,7 @@ public class BettyListener implements Listener {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 40, 0));
                     }
                     else {
-                        effectManager.setResistance(player, 20);
+                        effectManager.setResistance(player, 1);
                     }
                 }
             }
@@ -140,7 +140,7 @@ public class BettyListener implements Listener {
         if (args.length == 2 && args[0].equals("/ut") && args[1].equals("akumu") && isBetty(player)) {
             if (isNight(player.getWorld().getTime()) || isInShadow(player.getLocation())) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 5 * 60 * 20, 0));
-                effectManager.setSpeed(player, 50);
+                effectManager.setSpeed(player, 2.5);
                 new BukkitRunnable() {
                     @Override
                     public void run() {

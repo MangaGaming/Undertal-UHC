@@ -51,7 +51,7 @@ public class GasterListener implements Listener {
         UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("W.D Gaster");
         if (uhcPlayer != null) {
             Player player = uhcPlayer.getPlayer();
-            effectManager.setWeakness(player, 20);
+            effectManager.setWeakness(player, 1);
             player.getInventory().addItem(getGasterItem());
             player.getInventory().addItem(getGasterItem());
             player.getInventory().addItem(getGasterItem());
@@ -63,7 +63,7 @@ public class GasterListener implements Listener {
                     if (time >= 0 && time < 12000) {
                         effectManager.removeEffect(player, PotionEffectType.SPEED);
                     } else if (!trueLabForm) {
-                        effectManager.setSpeed(player, 20);
+                        effectManager.setSpeed(player, 1);
                     }
                 }
             }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20 * 3);
@@ -160,9 +160,9 @@ public class GasterListener implements Listener {
 
     private void addTrueLabFormEffect(Player player) {
         trueLabForm = true;
-        effectManager.setResistance(player, 20);
-        effectManager.setStrength(player, 20);
-        effectManager.setStrength(player, 40);
+        effectManager.setResistance(player, 1);
+        effectManager.setStrength(player, 1);
+        effectManager.setStrength(player, 2);
         effectManager.setNoFall(player, true);
         player.setMaxHealth(player.getMaxHealth() + 4);
         effectManager.removeEffect(player, PotionEffectType.WEAKNESS);

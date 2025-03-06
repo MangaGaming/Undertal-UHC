@@ -41,9 +41,9 @@ public class MettatonListener implements Listener {
         UhcPlayer uhcPlayer = roleManager.getPlayerWithRole("Mettaton");
         if (uhcPlayer != null) {
             Player player = uhcPlayer.getPlayer();
-            effectManager.setWeakness(player, 20);
-            effectManager.setResistance(player, 20);
-            effectManager.setSpeed(player, 20);
+            effectManager.setWeakness(player, 1);
+            effectManager.setResistance(player, 1);
+            effectManager.setSpeed(player, 1);
         }
     }
 
@@ -61,7 +61,7 @@ public class MettatonListener implements Listener {
                 player.setMaxHealth(player.getMaxHealth() - 4);
                 effectManager.removeEffect(player, PotionEffectType.WEAKNESS);
                 effectManager.removeEffect(player, PotionEffectType.DAMAGE_RESISTANCE);
-                effectManager.setStrength(player, 20);
+                effectManager.setStrength(player, 1);
                 damager.sendMessage("Mettaton a changé de forme ! Il a été téléporter en " + player.getLocation().getBlockX() + " " + player.getLocation().getBlockZ());
             }
         }

@@ -70,7 +70,7 @@ public class FloweyListener implements Listener {
                     if (time >= 0 && time < 12000) {
                         effectManager.removeEffect(player, PotionEffectType.INCREASE_DAMAGE);
                     } else if (!isInOmega) {
-                        effectManager.setStrength(player, 20);
+                        effectManager.setStrength(player, 1);
                     }
                 }
             }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20*3);
@@ -156,8 +156,8 @@ public class FloweyListener implements Listener {
             if (soulCount >= 6) {
                 isInOmega = true;
                 player.sendMessage(ChatColor.GREEN + "Vous etes passe en forme Omega");
-                effectManager.setSpeed(player, 40);
-                effectManager.setStrength(player, 40);
+                effectManager.setSpeed(player, 2);
+                effectManager.setStrength(player, 2);
 
                 UhcPlayer frisk = roleManager.getPlayerWithRole("Frisk");
                 if (frisk != null) {

@@ -85,7 +85,7 @@ public class FriskListener implements Listener {
 			}
 			player.getInventory().addItem(friskItem);
 
-			effectManager.setWeakness(player, 20);
+			effectManager.setWeakness(player, 1);
 
 			UhcRole friskRole = roleManager.getUhcRole("Frisk");
 			if (friskRole != null) {
@@ -129,13 +129,13 @@ public class FriskListener implements Listener {
 				if(aimedPlayer != null) {
 					if(cooldownManager.getRemainingCooldown(player, saveAbility) == 0) {
 						cooldownManager.startCooldown(aimedPlayer, saveAbility);
-						effectManager.setWeakness(aimedPlayer, effectManager.getEffect(aimedPlayer, PotionEffectType.WEAKNESS) + 25);
+						effectManager.setWeakness(aimedPlayer, effectManager.getEffect(aimedPlayer, PotionEffectType.WEAKNESS) + 1.25);
 						player.sendMessage(ChatColor.GREEN + "Vous avez baissé les dégats de " + aimedPlayer.getName() + " de 25%");
 						aimedPlayer.sendMessage(ChatColor.RED + "Vos dégats ont été baissé de 25%");
 						new BukkitRunnable() {
 							@Override
 							public void run() {
-								effectManager.setWeakness(aimedPlayer, effectManager.getEffect(aimedPlayer, PotionEffectType.WEAKNESS) - 25);
+								effectManager.setWeakness(aimedPlayer, effectManager.getEffect(aimedPlayer, PotionEffectType.WEAKNESS) - 1.25);
 								player.sendMessage(ChatColor.RED + "Les dégats de " + aimedPlayer.getName() + " sont de nouveau normal");
 								aimedPlayer.sendMessage(ChatColor.GREEN + "Vos dégats sont de nouveau normal");
 							}
@@ -161,8 +161,8 @@ public class FriskListener implements Listener {
 						duo = chosenPlayer;
 						chosenPlayer.sendMessage("Vous avez été assigner au camp " + camp.getName() + ", vous êtes avec " + player.getName());
 						roleManager.setCamp(playerManager.getPlayer(player), camp);
-						effectManager.setResistance(player, effectManager.getEffect(player, PotionEffectType.DAMAGE_RESISTANCE) + 20);
-						effectManager.setSpeed(player, effectManager.getEffect(player, PotionEffectType.SPEED) + 110);
+						effectManager.setResistance(player, effectManager.getEffect(player, PotionEffectType.DAMAGE_RESISTANCE) + 1);
+						effectManager.setSpeed(player, effectManager.getEffect(player, PotionEffectType.SPEED) + 0.5);
 						effectManager.removeEffect(player, PotionEffectType.WEAKNESS);
 						player.sendMessage("Vous avez été assigner au camp " + camp.getName() + ", vous êtes avec " + player.getName() + ". Vous avez gagné vos effets");
 						break;

@@ -127,15 +127,15 @@ public class SansListener implements Listener {
                  playerLocations.put(player, player.getLocation());
 
                  player.teleport(trueLabLocations.get(random.nextInt(trueLabLocations.size())));
-                 effectManager.setResistance(player, 20);
-                 effectManager.setStrength(player, 40);
+                 effectManager.setResistance(player, 1);
+                 effectManager.setStrength(player, 2);
 
                  for(Player nearbyPlayer : nearbyPlayers) {
                      playerEffects.put(nearbyPlayer, effectManager.getEffectsMap(player));
                      playerLocations.put(nearbyPlayer, nearbyPlayer.getLocation());
                      nearbyPlayer.teleport(trueLabLocations.get(random.nextInt(trueLabLocations.size())));
                      effectManager.removeEffects(nearbyPlayer);
-                     effectManager.setWeakness(nearbyPlayer, 20);
+                     effectManager.setWeakness(nearbyPlayer, 1);
                  }
                  
                  Bukkit.getPluginManager().registerEvents(new Listener() {
