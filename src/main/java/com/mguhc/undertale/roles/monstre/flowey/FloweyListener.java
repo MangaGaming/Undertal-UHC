@@ -51,8 +51,8 @@ public class FloweyListener implements Listener {
 
         UhcRole role = roleManager.getUhcRole("Flowey");
         if (role != null) {
-            this.cibleAbility = new CibleAbility();
-            this.scanAbility = new ScanAbility();
+            this.cibleAbility = new Ability("/ut cible", 20*60*1000);
+            this.scanAbility = new Ability("/ut scan", 10*60*1000);
             abilityManager.registerAbility(role, Arrays.asList(cibleAbility, scanAbility));
         }
     }

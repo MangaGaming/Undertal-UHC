@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,7 +34,7 @@ import com.mguhc.undertale.UndertaleUHC;
 public class AlizaListener implements Listener {
     private EffectManager effectManager;
     private CooldownManager cooldownManager;
-    private InstinctAbility instinctAbility;
+    private Ability instinctAbility;
     private AbilityManager abilityManager;
     private RoleManager roleManager;
     private List<Player> playerWhoUsedSoul = new ArrayList<>();
@@ -52,7 +51,7 @@ public class AlizaListener implements Listener {
 
         UhcRole alizaRole = roleManager.getUhcRole("Aliza");
         if(alizaRole != null) {
-            this.instinctAbility = new InstinctAbility();
+            this.instinctAbility = new Ability("/ut instinct", 6*60*1000);
             List<Ability> abilities = Arrays.asList(instinctAbility);
             abilityManager.registerAbility(alizaRole, abilities);
         }

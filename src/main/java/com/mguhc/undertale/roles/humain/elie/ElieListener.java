@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
@@ -47,8 +46,8 @@ public class ElieListener implements Listener {
 	private PlayerManager playerManager;
 	private CooldownManager cooldownManager;
 	private AbilityManager abilityManager;
-	private RevelationAbility revelationability;
-	private VisionAbility visionability;
+	private Ability revelationability;
+	private Ability visionability;
 	private Player playerWhoHasSoulPower;
 	private Set<Player> playersWhoUsedSoulPower = new HashSet<>();
     private final Map<Player, Location> lastLocation = new HashMap<>();
@@ -60,12 +59,6 @@ public class ElieListener implements Listener {
 		this.playerManager = UhcAPI.getInstance().getPlayerManager();
 		this.cooldownManager = UhcAPI.getInstance().getCooldownManager();
 		this.abilityManager = UhcAPI.getInstance().getAbilityManager();
-		
-		this.revelationability = new RevelationAbility();
-		this.visionability = new VisionAbility();
-		
-		List<Ability> abilities = Arrays.asList(revelationability, visionability);
-		abilityManager.registerAbility(roleManager.getUhcRole("Elie"), abilities);
 	}
 
     @EventHandler
@@ -113,6 +106,12 @@ public class ElieListener implements Listener {
                     }
                 }
             }.runTaskTimer(UndertaleUHC.getInstance(), 0, 20);
+
+            this.revelationability = new Ability("Repos Stratégiquement Calculé", 20*60*1000);
+            this.visionability = new Ability("Vision Clairvoyante", 3*60*1000);
+
+            List<Ability> abilities = Arrays.asList(revelationability, visionability);
+            abilityManager.registerAbility(roleManager.getUhcRole("Elie"), abilities);
         }
     }
 
@@ -195,8 +194,8 @@ public class ElieListener implements Listener {
 	                if (abilities != null) {
 
 		                for (Ability ability : abilities) {
-		                    ability.setCooldownDuration((long) (ability.getCooldownDuration() * 0.8));
-		                    player.sendMessage("Le cooldown de l'" + ability.getClass().getName() + " a été réduit et fait maintenant : " + ability.getCooldownDuration());
+		                    ability.setCooldown((int) (ability.getCooldown() * 0.8));
+		                    player.sendMessage("Le cooldown de l'" + ability.getName() + " a été réduit et fait maintenant : " + ability.getCooldown());
 		                }
 
 		                // Marquer le pouvoir de l'âme comme utilisé
@@ -209,8 +208,8 @@ public class ElieListener implements Listener {
 	                List<Ability> abilities = abilityManager.getAbilitys(role);
 	                if (abilities != null) {
 	                    for (Ability ability : abilities) {
-	                        ability.setCooldownDuration((long) (ability.getCooldownDuration() / 0.8));
-	                        player.sendMessage("Le cooldown de l'" + ability.getClass().getName() + " a été augmenté et fait maintenant : " + ability.getCooldownDuration());
+	                        ability.setCooldown((int) (ability.getCooldown() / 0.8));
+	                        player.sendMessage("Le cooldown de l'" + ability.getClass().getName() + " a été augmenté et fait maintenant : " + ability.getCooldown());
 	                    }
 	                }
 	            }

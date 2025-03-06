@@ -15,10 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mguhc.UhcAPI;
@@ -39,9 +40,10 @@ public class CloverListener implements Listener {
     private CooldownManager cooldownManager;
     private AbilityManager abilityManager;
 
-    private JusticeAbility justiceAbility;
-    private BalanceAbility balanceAbility;
-    private SoulPowerAbility soulPowerAbility;
+    private Ability justiceAbility;
+    private Ability balanceAbility;
+    private Ability soulPowerAbility;
+    private Ability justiceIAbility;
 
     public CloverListener() {
         this.playerManager = UhcAPI.getInstance().getPlayerManager();
@@ -50,13 +52,14 @@ public class CloverListener implements Listener {
         this.abilityManager = UhcAPI.getInstance().getAbilityManager();
 
         // Enregistrer les abilities pour le rôle "Clover"
-        UhcRole cloverRole = roleManager.getUhcRole("Clover"); // Assurez-vous que le rôle "Clover" existe
+        UhcRole cloverRole = roleManager.getUhcRole("Clover");
         if (cloverRole != null) {
-            this.justiceAbility = new JusticeAbility();
-            this.balanceAbility = new BalanceAbility();
-            this.soulPowerAbility = new SoulPowerAbility();
+            this.justiceAbility = new Ability("/ut justice", 5*60*1000);
+            this.balanceAbility = new Ability("Balance", 20*60*1000);
+            this.justiceIAbility = new Ability("Justice Implacable", 30*1000);
+            this.soulPowerAbility = new Ability("Pouvoir de l'âme", 20*60*1000);
 
-            List<Ability> abilities = Arrays.asList(justiceAbility, balanceAbility, soulPowerAbility);
+            List<Ability> abilities = Arrays.asList(justiceAbility, balanceAbility, justiceIAbility, soulPowerAbility);
 
             abilityManager.registerAbility(cloverRole, abilities);
         }
@@ -97,9 +100,9 @@ public class CloverListener implements Listener {
         }
 
         if (isClover(uhcPlayerDamager)) {
-            if (!cooldownManager.isInCooldown(damager, justiceAbility)) {
+            if (!cooldownManager.isInCooldown(damager, justiceIAbility)) {
                 event.setDamage(event.getDamage() + 0.5);
-                cooldownManager.startCooldown(damager, justiceAbility);
+                cooldownManager.startCooldown(damager, justiceIAbility);
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -107,7 +110,7 @@ public class CloverListener implements Listener {
                     }
                 }.runTaskLater(UndertaleUHC.getInstance(), 30 * 20);
             } else {
-                damager.sendMessage("Vous êtes en cooldown pour : " + cooldownManager.getRemainingCooldown(damager, justiceAbility)/20 + " secondes");
+                damager.sendMessage("Vous êtes en cooldown pour : " + cooldownManager.getRemainingCooldown(damager, justiceIAbility)/20 + " secondes");
             }
         }
 
@@ -117,11 +120,11 @@ public class CloverListener implements Listener {
 
         UhcPlayer soulUhcPlayer = getPlayerWithSoul();
         if (soulUhcPlayer != null &&
-                !isAlly(soulUhcPlayer, uhcPlayerDamager) &&
-                isAlly(soulUhcPlayer, uhcPlayerVictim) &&
-                soulUhcPlayer.getPlayer().getNearbyEntities(15, 15, 15).contains(damager) &&
-                !cooldownManager.isInCooldown(soulUhcPlayer.getPlayer(), soulPowerAbility)) {
-            soulPowerAbility.activate(soulUhcPlayer.getPlayer());
+            !isAlly(soulUhcPlayer, uhcPlayerDamager) &&
+            isAlly(soulUhcPlayer, uhcPlayerVictim) &&
+            soulUhcPlayer.getPlayer().getNearbyEntities(15, 15, 15).contains(damager) &&
+            !cooldownManager.isInCooldown(soulUhcPlayer.getPlayer(), soulPowerAbility)) {
+            soulUhcPlayer.getPlayer().sendMessage(ChatColor.GREEN + "Un ennemi proche de vous a attaqué un de vos alliés !");
             cooldownManager.startCooldown(soulUhcPlayer.getPlayer(), soulPowerAbility);
         }
     }
@@ -130,24 +133,27 @@ public class CloverListener implements Listener {
     public void OnCommand(PlayerCommandPreprocessEvent event) {
         if (event.getMessage().equals("/ut justice")) {
             Player player = event.getPlayer();
-            for (Entity nearbyEntity : player.getNearbyEntities(5, 5, 5)) {
-                if (nearbyEntity instanceof Player) {
-                    Player nearbyPlayer = (Player) nearbyEntity;
-                    UhcPlayer uhcPlayerNearby = playerManager.getPlayer(nearbyPlayer);
-                    UhcPlayer uhcPlayer = playerManager.getPlayer(player);
-                    if (uhcPlayer != null && uhcPlayerNearby != null && isAlly(uhcPlayer, uhcPlayerNearby)) {
-                        if (nearbyPlayer.getHealth() <= 10) {
-                            justiceAbility.activate(player);
-                            justiceAbility.activate(nearbyPlayer);
-                        } else {
-                            player.sendMessage("Vous n'avez pas d'allié blessé à proximité");
+            if (cooldownManager.getRemainingCooldown(player, justiceAbility) == 0) {
+                cooldownManager.startCooldown(player, justiceAbility);
+                for (Entity nearbyEntity : player.getNearbyEntities(5, 5, 5)) {
+                    if (nearbyEntity instanceof Player) {
+                        Player nearbyPlayer = (Player) nearbyEntity;
+                        UhcPlayer uhcPlayerNearby = playerManager.getPlayer(nearbyPlayer);
+                        UhcPlayer uhcPlayer = playerManager.getPlayer(player);
+                        if (uhcPlayer != null && uhcPlayerNearby != null && isAlly(uhcPlayer, uhcPlayerNearby)) {
+                            if (nearbyPlayer.getHealth() <= 10) {
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5 * 20, 0));
+                                player.sendMessage(ChatColor.GREEN + "Vous avez activé la capacité de Justice !");
+
+                                nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5 * 20, 0));
+                                nearbyPlayer.sendMessage(ChatColor.GREEN + "Vous avez reçu la capacité de Justice !");
+                            }
                         }
-                    } else {
-                        player.sendMessage("Vous n'avez pas d'allié blessé à proximité");
                     }
-                } else {
-                    player.sendMessage("Vous n'avez pas d'allié blessé à proximité");
                 }
+            }
+            else {
+                player.sendMessage("§cVous êtes en cooldown pour : " + (long) cooldownManager.getRemainingCooldown(player, justiceAbility) / 1000 + "s");
             }
         }
     }
@@ -159,7 +165,8 @@ public class CloverListener implements Listener {
         if (killer != null &&
                 isClover(playerManager.getPlayer(killer)) &&
                 !cooldownManager.isInCooldown(killer, balanceAbility)) {
-            balanceAbility.activate(killer);
+            killer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10 * 20, 0));
+            killer.sendMessage(ChatColor.GREEN + "Vous avez activé la capacité de Balance !");
             cooldownManager.startCooldown(killer, balanceAbility);
         }
         if (isClover(playerManager.getPlayer(victim))) {

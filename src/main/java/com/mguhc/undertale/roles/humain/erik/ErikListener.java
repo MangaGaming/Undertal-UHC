@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
@@ -20,7 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,6 +38,7 @@ import com.mguhc.player.UhcPlayer;
 import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import com.mguhc.undertale.UndertaleUHC;
+import org.bukkit.util.Vector;
 
 public class ErikListener implements Listener {
 
@@ -54,7 +55,7 @@ public class ErikListener implements Listener {
     private Map<Player, Boolean> hasFoughtErik = new HashMap<>(); // Pour suivre si un joueur a déjà combattu Erik
     private Map<Player, ItemStack[]> ancientInventories = new HashMap<>();
     private Map<Player, ItemStack[]> ancientArmors = new HashMap<>();
-	private ChargeAudacieuseAbility chargeAudacieuse;
+	private Ability chargeAudacieuse;
 
     public ErikListener() {
         this.roleManager = UhcAPI.getInstance().getRoleManager();
@@ -62,12 +63,6 @@ public class ErikListener implements Listener {
         this.abilityManager = UhcAPI.getInstance().getAbilityManager();
         this.cooldownManager = UhcAPI.getInstance().getCooldownManager();
         this.effectManager = UhcAPI.getInstance().getEffectManager();
-
-        // Enregistrer la capacité "Charge Audacieuse" pour le rôle "Erik"
-        UhcRole erikRole = roleManager.getUhcRole("Erik"); // Assurez-vous que le rôle "Erik" existe
-        this.chargeAudacieuse = new ChargeAudacieuseAbility();
-        List<Ability> abilities = Arrays.asList(chargeAudacieuse);
-        abilityManager.registerAbility(erikRole, abilities); // Enregistrer l'ability
     }
 
     @EventHandler
@@ -129,6 +124,11 @@ public class ErikListener implements Listener {
                     }
                 }
             }.runTaskTimer(UndertaleUHC.getInstance(), 0, 3 * 20);
+
+            // Enregistrer la capacité "Charge Audacieuse" pour le rôle "Erik"
+            this.chargeAudacieuse = new Ability("Charge Audacieuse", 7*60*1000);
+            List<Ability> abilities = Arrays.asList(chargeAudacieuse);
+            abilityManager.registerAbility(uhcPlayer.getRole(), abilities); // Enregistrer l'ability
         }
     }
 
@@ -174,7 +174,7 @@ public class ErikListener implements Listener {
                 }
             }
 
-            // Vérifiez si le combat a commencé
+            // Vérifiez si le combat à commencer
             if (hasBattleStart) {
                 // Vérifiez si la santé du damager est tombée à 0 ou moins après les dégâts
                 if (victim.getHealth() - event.getFinalDamage() <= 0) {
@@ -266,7 +266,7 @@ public class ErikListener implements Listener {
 		            Bukkit.getPluginManager().registerEvents(new Listener() {
 		            	@EventHandler
 		            	public void onGolemDeath(EntityDeathEvent e) {
-		            	    if (e.getEntity().getMetadata("attacker").size() > 0) { // Vérifiez si la liste n'est pas vide
+		            	    if (!e.getEntity().getMetadata("attacker").isEmpty()) { // Vérifiez si la liste n'est pas vide
 		            	        if (e.getEntity().getMetadata("attacker").get(0).value() instanceof UUID) {
 		            	            UUID attackerUUID = (UUID) e.getEntity().getMetadata("attacker").get(0).value();
 		            	            if (attackerUUID.equals(victim.getUniqueId())) {
@@ -293,20 +293,50 @@ public class ErikListener implements Listener {
 
         // Vérifier si l'item est la Charge Audacieuse
         if (item.getItemMeta() != null &&
-            item.getItemMeta().hasDisplayName() &&
-            item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Charge Audacieuse") &&
-            isErik(playerManager.getPlayer(player))) {
+                item.getItemMeta().hasDisplayName() &&
+                item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Charge Audacieuse") &&
+                isErik(playerManager.getPlayer(player))) {
 
-                // Vérifier si le joueur est en cooldown pour cette capacité
-                if (!cooldownManager.isInCooldown(player, chargeAudacieuse)) {
-                    // Activer la capacité
-                	chargeAudacieuse.activate(player);
-                } else {
-                	double remaining = cooldownManager.getRemainingCooldown(player, chargeAudacieuse);
-                    player.sendMessage("Vous devez attendre " + (remaining / 1000) + " secondes avant de réutiliser la Charge Audacieuse.");
+            // Vérifier si le joueur est en cooldown pour cette capacité
+            if (!cooldownManager.isInCooldown(player, chargeAudacieuse)) {
+                double dashDistance = 10.0;
+                // Obtenir la direction du joueur
+                Vector direction = player.getLocation().getDirection().normalize();
+                player.setVelocity(direction.multiply(dashDistance)); // Déplacer le joueur
+
+                // Infliger des dégâts aux joueurs sur le chemin
+                for (Entity entity : player.getNearbyEntities(dashDistance, dashDistance, dashDistance)) {
+                    if (entity instanceof Player && !entity.equals(player)) {
+                        Player target = (Player) entity;
+                        // Vérifier si le joueur est sur le chemin du dash
+                        if (isInDashPath(player, target, direction, dashDistance)) {
+                            double damage = 2.0;
+                            target.damage(damage); // Infliger des dégâts
+                        }
+                    }
                 }
+
+                // Message de confirmation
+                player.sendMessage(ChatColor.GOLD + "Vous avez utilisé la Charge Audacieuse !");
+
+                // Démarrer le cooldown
+                cooldownManager.startCooldown(player, chargeAudacieuse);
+            } else {
+                double remaining = cooldownManager.getRemainingCooldown(player, chargeAudacieuse);
+                player.sendMessage("Vous devez attendre " + (remaining / 1000) + " secondes avant de réutiliser la Charge Audacieuse.");
             }
         }
+    }
+
+    private boolean isInDashPath(Player player, Player target, Vector direction, double distance) {
+        // Vérifier si le joueur cible est sur le chemin du dash
+        Vector playerLocation = player.getLocation().toVector();
+        Vector targetLocation = target.getLocation().toVector();
+        Vector endLocation = playerLocation.add(direction.multiply(distance));
+
+        // Vérifier si la cible est dans un rayon de 1 bloc du chemin
+        return targetLocation.isInAABB(playerLocation, endLocation);
+    }
 
     @EventHandler
     private void OnDeath(UhcDeathEvent event) {

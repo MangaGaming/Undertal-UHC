@@ -11,10 +11,8 @@ import com.mguhc.player.UhcPlayer;
 import com.mguhc.roles.RoleManager;
 import com.mguhc.roles.UhcRole;
 import com.mguhc.undertale.UndertaleUHC;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,7 +50,7 @@ public class AsrielListener implements Listener {
 
         UhcRole asriel = roleManager.getUhcRole("Asriel");
         if (asriel != null) {
-            this.starAbility = new StarAbility();
+            this.starAbility = new Ability("Star Meteor", 5*1000);
             abilityManager.registerAbility(asriel, Arrays.asList(starAbility));
         }
     }

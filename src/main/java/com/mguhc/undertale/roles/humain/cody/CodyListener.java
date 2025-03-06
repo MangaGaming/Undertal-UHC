@@ -12,11 +12,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mguhc.UhcAPI;
@@ -36,9 +37,9 @@ public class CodyListener implements Listener {
     private RoleManager roleManager;
     private CooldownManager cooldownManager;
     private AbilityManager abilityManager;
-    private HealAbility healAbility;
-    private CodyAbility codyAbility;
-    private PaixAbility paixAbility;
+    private Ability healAbility;
+    private Ability codyAbility;
+    private Ability paixAbility;
 	private EffectManager effectManager;
     protected Player playerWithSoul;
 
@@ -52,9 +53,9 @@ public class CodyListener implements Listener {
         // Enregistrer les abilities pour le rôle "Cody"
         UhcRole codyRole = roleManager.getUhcRole("Cody"); // Assurez-vous que le rôle "Cody" existe
         if (codyRole != null) {
-            this.healAbility = new HealAbility();
-            this.codyAbility = new CodyAbility();
-            this.paixAbility = new PaixAbility();
+            this.healAbility = new Ability("/ut heal", 20*60*1000);
+            this.codyAbility = new Ability("/ut cody", 2*1000);
+            this.paixAbility = new Ability("Effet de Paix", 60*1000);
             
             List<Ability> abilities = Arrays.asList(
             	healAbility, codyAbility, paixAbility
@@ -98,7 +99,11 @@ public class CodyListener implements Listener {
             if (!cooldownManager.isInCooldown(player, healAbility)) {
                 Player aimedPlayer = Bukkit.getPlayer(args[2]);
                 if (aimedPlayer != null) {
-                    healAbility.activate(aimedPlayer); // Utiliser la méthode activate de HealAbility
+                    double healAmount = 4.0; // Montant de soin
+                    aimedPlayer.setHealth(Math.min(player.getHealth() + healAmount, player.getMaxHealth())); // Ne pas dépasser la santé maximale
+                    aimedPlayer.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 10 * 20, 0)); // Ajoute un effet d'absorption
+                    aimedPlayer.sendMessage(ChatColor.GREEN + "Vous vous êtes soigné de " + healAmount + " PV.");
+
                     player.sendMessage("Vous avez soigné " + aimedPlayer.getName() + " de 4 PV.");
 
                     // Démarrer le cooldown
@@ -124,7 +129,10 @@ public class CodyListener implements Listener {
             if (!cooldownManager.isInCooldown(player, codyAbility)) {
                 Player aimedPlayer = Bukkit.getPlayer(args[2]);
                 if (aimedPlayer != null) {
-                    codyAbility.activate(aimedPlayer); // Utiliser la méthode activate de CodyAbility
+                    int duration = 15 * 20;
+                    aimedPlayer.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, duration, 0)); // Ajoute un effet de résistance
+                    aimedPlayer.sendMessage(ChatColor.GREEN + "Vous avez reçu une résistance aux dégâts pendant " + (duration / 20) + " secondes.");
+
                     player.sendMessage("Vous avez donné une résistance aux dégâts à " + aimedPlayer.getName() + ".");
 
                     // Démarrer le cooldown
@@ -148,8 +156,10 @@ public class CodyListener implements Listener {
                 if (nearbyEntity instanceof Player) {
                     Player nearbyPlayer = (Player) nearbyEntity;
                     if (!roleManager.getCamp(playerManager.getPlayer(player)).getName().equals("Humain")) {
-                            paixAbility.activate(nearbyPlayer); // Utiliser la méthode activate de PaixAbility
-                            cooldownManager.startCooldown(player, paixAbility);
+                        int duration = 5 * 20;
+                        nearbyPlayer.sendMessage(ChatColor.GREEN + "Vous avez activé l'effet de paix !");
+                        nearbyPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration, 0)); // Ajoute un effet de lenteur
+                        cooldownManager.startCooldown(player, paixAbility);
                     }
                 }
             }

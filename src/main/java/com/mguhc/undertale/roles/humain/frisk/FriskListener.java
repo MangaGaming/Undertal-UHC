@@ -36,8 +36,9 @@ import java.util.*;
 public class FriskListener implements Listener {
 
 	private EffectManager effectManager;
-	private SaveAbility saveAbility;
-	private ActAbility actAbility;
+	private Ability saveAbility;
+	private Ability actAbility;
+	private Ability friskAbility;
 	private PlayerManager playerManager;
 	private RoleManager roleManager;
 	private CooldownManager cooldownManager;
@@ -68,14 +69,6 @@ public class FriskListener implements Listener {
 		this.cooldownManager = api.getCooldownManager();
 		this.abilityManager = api.getAbilityManager();
 		this.effectManager = UhcAPI.getInstance().getEffectManager();
-
-		UhcRole friskRole = roleManager.getUhcRole("Frisk");
-		if (friskRole != null) {
-			this.saveAbility = new SaveAbility();
-			this.actAbility = new ActAbility();
-			List<Ability> abilities = Arrays.asList(saveAbility, actAbility);
-			abilityManager.registerAbility(friskRole, abilities);
-		}
 	}
 
 	@EventHandler
@@ -93,6 +86,15 @@ public class FriskListener implements Listener {
 			player.getInventory().addItem(friskItem);
 
 			effectManager.setWeakness(player, 20);
+
+			UhcRole friskRole = roleManager.getUhcRole("Frisk");
+			if (friskRole != null) {
+				this.saveAbility = new Ability("/ut save", 5*60*1000);
+				this.actAbility = new Ability("/ut act", 5*60*1000);
+				this.friskAbility = new Ability("/ut frisk", 3*60*1000);
+				List<Ability> abilities = Arrays.asList(saveAbility, actAbility, friskAbility);
+				abilityManager.registerAbility(friskRole, abilities);
+			}
 		}
 	}
 
@@ -148,7 +150,7 @@ public class FriskListener implements Listener {
 				}
 			}
 		}
-		if(args.length == 2 && args[0].equals("/ut") && args[1].equals("mercy")) {
+		if(isFrisk(playerManager.getPlayer(player))  && args.length == 2 && args[0].equals("/ut") && args[1].equals("mercy")) {
 			if(playerCanUseMercy.getOrDefault(player.getUniqueId(), true)) {
 				Random random = new Random();
 				for(Map.Entry<Player, UhcPlayer> entry : playerManager.getPlayers().entrySet()) {
@@ -168,6 +170,21 @@ public class FriskListener implements Listener {
 				}
 				hasUsedMercy = true;
                 playerCanUseMercy.put(player.getUniqueId(), false);
+			}
+		}
+		if (isFrisk(playerManager.getPlayer(player)) && args.length == 3 && event.getMessage().contains("/ut frisk")) {
+			if (cooldownManager.getRemainingCooldown(player, friskAbility) == 0) {
+				if (args[2].equals(player.getName())) {
+					player.setHealth(player.getHealth() + 0.5);
+					cooldownManager.startCooldown(player, friskAbility);
+				}
+				else if (duo != null && args[2].equals(duo.getName())) {
+					duo.setHealth(duo.getHealth()+ 0.5);
+					cooldownManager.startCooldown(player, friskAbility);
+				}
+			}
+			else {
+				player.sendMessage("Vous êtes en cooldown pour " + (long) cooldownManager.getRemainingCooldown(player, friskAbility) / 1000 + " secondes");
 			}
 		}
 	}

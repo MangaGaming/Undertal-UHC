@@ -54,8 +54,8 @@ public class PlayerRoleListener implements Listener {
 
         UhcRole role = roleManager.getUhcRole("Player");
         if (role != null) {
-            this.manipulationAbility = new ManipulationAbility();
-            this.espionAbility = new EspionAbility();
+            this.manipulationAbility = new Ability("/ut manipulation", 20*60*1000);
+            this.espionAbility = new Ability("/ut espion", 20*60*1000);
             abilityManager.registerAbility(role, Arrays.asList(manipulationAbility, espionAbility));
         }
     }

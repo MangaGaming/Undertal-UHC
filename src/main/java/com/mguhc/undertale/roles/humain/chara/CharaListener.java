@@ -20,7 +20,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -35,8 +34,8 @@ import java.util.*;
 
 public class CharaListener implements Listener {
 
-    private PecherAbility pecherAbility;
-    private RageAbility rageAbility;
+    private Ability pecherAbility;
+    private Ability rageAbility;
     private EffectManager effectManager;
     private AbilityManager abilityManager;
     private CooldownManager cooldownManager;
@@ -58,8 +57,8 @@ public class CharaListener implements Listener {
 
         UhcRole charaRole = roleManager.getUhcRole("Chara");
         if(charaRole != null) {
-            this.rageAbility = new RageAbility();
-            this.pecherAbility = new PecherAbility();
+            this.rageAbility = new Ability("Rage Génocidaire", 5*1000);
+            this.pecherAbility = new Ability("Pécher", 3*1000);
             List<Ability> abiilities = Arrays.asList(rageAbility, pecherAbility);
             abilityManager.registerAbility(charaRole, abiilities);
         }

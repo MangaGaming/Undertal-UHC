@@ -1,6 +1,7 @@
 package com.mguhc.undertale.roles.solo.betty;
 
 import com.mguhc.UhcAPI;
+import com.mguhc.ability.Ability;
 import com.mguhc.ability.AbilityManager;
 import com.mguhc.ability.CooldownManager;
 import com.mguhc.effect.EffectManager;
@@ -17,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +36,7 @@ public class BettyListener implements Listener {
     private RoleManager roleManager;
     private PlayerManager playerManager;
     private String currentForme = "Terrifiante";
-    private EffetDePeurAbility effetDePeurAbility;
+    private Ability effetDePeurAbility;
 
     public BettyListener() {
         UhcAPI api = UhcAPI.getInstance();
@@ -55,7 +55,7 @@ public class BettyListener implements Listener {
             player.getInventory().addItem(getFormItem());
             player.getInventory().addItem(getSoulItem());
 
-            effetDePeurAbility = new EffetDePeurAbility();
+            effetDePeurAbility = new Ability("Effet de peur", 5*60*1000);
             abilityManager.registerAbility(roleManager.getUhcRole("Betty"), Collections.singletonList(effetDePeurAbility));
 
             startArmorTask(player);

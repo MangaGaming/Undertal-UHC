@@ -1,6 +1,7 @@
 package com.mguhc.undertale.roles.monstre.papyrus;
 
 import com.mguhc.UhcAPI;
+import com.mguhc.ability.Ability;
 import com.mguhc.ability.AbilityManager;
 import com.mguhc.ability.CooldownManager;
 import com.mguhc.effect.EffectManager;
@@ -18,7 +19,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class PapyrusListener implements Listener {
 
-    private BlueAbility blueAbility;
+    private Ability blueAbility;
     private EffectManager effectManager;
     private AbilityManager abilityManager;
     private CooldownManager cooldownManager;
@@ -51,7 +51,7 @@ public class PapyrusListener implements Listener {
 
         UhcRole role = roleManager.getUhcRole("Papyrus");
         if (role != null) {
-            this.blueAbility = new BlueAbility();
+            this.blueAbility = new Ability("Blue", 10*60*1000);
             abilityManager.registerAbility(role, Arrays.asList(blueAbility));
         }
     }
